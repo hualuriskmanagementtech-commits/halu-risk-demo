@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUA LU RISK — AI-Enabled Risk Management for the Energy Industry (Demo)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23142026'/%3E%3Cpath d='M9 8h4v6h6v-6h4v16h-4v-6H13v6H9z' fill='%23E2761F'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://miaoda.feishu.cn">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* ============================================================
+   HUALU RISK — design tokens
+   Industrial control-room instrument panel: hairline rules,
+   squared corners, dense tabular data, safety-orange signal.
+   ============================================================ */
+:root{
+  --ink:#142026;
+  --ink2:#1D2E35;
+  --ink3:#2A4048;
+  --paper:#ECEEEA;
+  --panel:#FFFFFF;
+  --line:#D3D9D4;
+  --line2:#E4E8E3;
+  --steel:#5E6E70;
+  --steel2:#84928F;
+  --accent:#D0641C;
+  --accent-dk:#A94D14;
+  --ok:#2F6E52;
+  --ok-bg:#E4EDE6;
+  --warn:#8C6A10;
+  --warn-bg:#F4EDD6;
+  --hi:#B9551E;
+  --hi-bg:#F6E4D5;
+  --crit:#8E2019;
+  --crit-bg:#F0D9D5;
+  --info:#2A5A87;
+  --info-bg:#E2EAF1;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"IBM Plex Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --r:2px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-weight:600;margin:0;letter-spacing:-.01em}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+a{color:inherit}
+.num,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.mono{letter-spacing:.01em}
+::selection{background:#F3D6BF}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}
+
+/* ---------- sidebar ---------- */
+.side{background:var(--ink);color:#C6D0CE;display:flex;flex-direction:column;position:relative}
+.side:after{content:"";position:absolute;inset:0 0 0 auto;width:1px;background:#000;opacity:.35}
+.brand{display:flex;align-items:center;gap:10px;padding:18px 18px 16px;border-bottom:1px solid rgba(255,255,255,.09);flex:0 0 auto}
+.brand-mark{width:30px;height:30px;background:var(--accent);display:grid;place-items:center;flex:0 0 auto}
+.brand-mark svg{width:16px;height:16px}
+.brand-txt strong{display:block;font-size:15px;font-weight:600;color:#fff;letter-spacing:.04em}
+.brand-txt span{display:block;font-size:10.5px;color:#8FA3A6;letter-spacing:.06em;margin-top:1px}
+.nav{padding:10px 0 14px;flex:1 1 auto;min-height:0;overflow-y:auto}
+.nav-group{padding:12px 18px 6px;font-size:10.5px;letter-spacing:.09em;color:#7B9095}
+.nav-item{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;color:#B7C3C2;
+  text-align:left;padding:9px 18px;border-left:3px solid transparent;font-size:13px;line-height:1.2}
+.nav-item svg{width:15px;height:15px;flex:0 0 auto;opacity:.75}
+.nav-item:hover{background:rgba(255,255,255,.045);color:#fff}
+.nav-item.on{background:rgba(208,100,28,.12);border-left-color:var(--accent);color:#fff}
+.nav-item.on svg{opacity:1;color:#F0A268}
+.nav-item .badge{margin-left:auto;font-family:var(--mono);font-size:10.5px;background:rgba(255,255,255,.1);
+  color:#D5DEDC;padding:1px 5px;border-radius:2px}
+.nav-item.on .badge{background:var(--accent);color:#fff}
+.side-foot{border-top:1px solid rgba(255,255,255,.09);padding:12px 18px 14px;font-size:11px;color:#8FA3A6;flex:0 0 auto}
+.sf-line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.7;display:block}
+.sf-line .sf-v{float:right;font-family:var(--mono);font-size:10.5px;color:#C6D0CE}
+.sf-dim{color:#7E9296;font-size:10.5px}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#4FA277;margin-right:5px;vertical-align:1px}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:14px;padding:0 22px;height:62px}
+.site-pick{display:flex;align-items:center;gap:9px;border:1px solid var(--line);background:#F7F8F6;
+  padding:6px 10px;border-radius:var(--r);min-width:0}
+.site-pick .k{font-size:10.5px;color:var(--steel2);display:block;line-height:1.1}
+.site-pick .v{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-expand{margin-left:auto;display:flex;align-items:center;gap:10px}
+.icon-btn{width:32px;height:32px;border:1px solid var(--line);background:#fff;border-radius:var(--r);
+  display:grid;place-items:center;color:var(--steel)}
+.icon-btn:hover{border-color:#B9C2BC;color:var(--ink)}
+.icon-btn svg{width:15px;height:15px}
+.tb-clock{font-family:var(--mono);font-size:11.5px;color:var(--steel);border-left:1px solid var(--line);padding-left:12px}
+.tb-user{display:flex;align-items:center;gap:9px;border-left:1px solid var(--line);padding-left:12px}
+.avatar{width:29px;height:29px;background:var(--ink2);color:#fff;display:grid;place-items:center;
+  font-size:11.5px;font-weight:600;border-radius:50%}
+.tb-user .n{font-size:12.5px;font-weight:600;line-height:1.15}
+.tb-user .r{font-size:10.5px;color:var(--steel2);line-height:1.2}
+
+/* ---------- content ---------- */
+.wrap{padding:20px 24px 40px;max-width:1580px}
+.view{display:none}
+.view.on{display:block}
+
+.page-hd{display:flex;align-items:flex-end;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.page-hd h1{font-size:21px;letter-spacing:-.015em}
+.page-hd .sub{font-size:12.5px;color:var(--steel);margin-top:3px}
+.page-hd .tools{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:#fff;padding:7px 12px;border-radius:var(--r);
+  font-size:12.5px;font-weight:500;color:var(--ink);display:inline-flex;align-items:center;gap:7px}
+.btn:hover{border-color:#B5BFB9;background:#FAFAF8}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.primary:hover{background:#203038}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.accent:hover{background:var(--accent-dk)}
+.btn.sm{padding:4px 9px;font-size:11.5px}
+.btn svg{width:13px;height:13px}
+.demo-flag{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;
+  color:var(--hi);background:var(--hi-bg);border:1px solid #E9C7AC;padding:3px 7px;border-radius:var(--r)}
+
+/* ---------- panels ---------- */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+.panel + .panel{margin-top:16px}
+.panel-hd{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line2)}
+.panel-hd h2{font-size:13px;font-weight:600}
+.panel-hd .hint{font-size:11.5px;color:var(--steel2)}
+.panel-hd .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.panel-bd{padding:14px}
+.panel-bd.flush{padding:0}
+
+/* ---------- KPI strip ---------- */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:#fff;
+  border:1px solid var(--line);border-radius:var(--r);margin-bottom:16px}
+.kpi{padding:13px 16px 14px;border-right:1px solid var(--line2);min-width:0}
+.kpi:last-child{border-right:0}
+.kpi .lbl{font-size:11px;color:var(--steel);display:flex;align-items:center;gap:6px;margin-bottom:7px;white-space:nowrap}
+.kpi .val{font-family:var(--mono);font-size:25px;font-weight:600;letter-spacing:-.02em;line-height:1;display:flex;align-items:baseline;gap:4px}
+.kpi .val i{font-style:normal;font-size:12px;font-weight:500;color:var(--steel2)}
+.kpi .delta{font-size:11px;margin-top:7px;color:var(--steel);display:flex;align-items:center;gap:5px}
+.kpi .delta .up{color:var(--crit)}
+.kpi .delta .down{color:var(--ok)}
+.kpi .bar{height:3px;background:#EDEFEB;margin-top:9px;position:relative;overflow:hidden}
+.kpi .bar i{position:absolute;inset:0 auto 0 0;display:block;background:var(--accent)}
+
+/* ---------- layout grids ---------- */
+.cols{display:grid;gap:16px}
+.cols.a{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}
+.cols.b{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.cols.c{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
+
+/* ---------- chips / filters ---------- */
+.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:11px 14px;border-bottom:1px solid var(--line2);background:#FAFAF8}
+.chip{border:1px solid var(--line);background:#fff;border-radius:var(--r);padding:4px 9px;font-size:11.5px;
+  color:var(--steel);display:inline-flex;gap:6px;align-items:center}
+.chip:hover{border-color:#B5BFB9;color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip .cnt{font-family:var(--mono);font-size:10.5px;opacity:.65}
+.search{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;padding:5px 9px;
+  border-radius:var(--r);min-width:190px}
+.search svg{width:13px;height:13px;color:var(--steel2);flex:0 0 auto}
+.search input{border:0;outline:0;font-family:inherit;font-size:12px;width:100%;background:transparent;color:var(--ink)}
+.filters .spacer{margin-left:auto}
+
+/* ---------- tables ---------- */
+.tbl-wrap{overflow-x:auto}
+table.tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12.5px}
+.tbl thead th{text-align:left;font-weight:600;font-size:11px;color:var(--steel);background:#F6F7F4;
+  padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl tbody td{padding:9px 12px;border-bottom:1px solid var(--line2);vertical-align:middle}
+.tbl tbody tr:hover{background:#FAFBF8}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl.compact{font-size:11.5px}
+.tbl.compact thead th,.tbl.compact tbody td{padding:7px 8px}
+.tbl.compact .ttl{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tbl .id{font-family:var(--mono);font-size:11px;color:var(--steel)}
+.tbl .ttl{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbl.ov{font-size:11.5px}
+.tbl.ov thead th,.tbl.ov tbody td{padding:8px 9px}
+.tbl.ov .ttl{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tbl .ttl small{display:block;font-weight:400;font-size:11px;color:var(--steel2);overflow:hidden;text-overflow:ellipsis}
+.tbl .score{font-family:var(--mono);font-weight:600}
+.tbl td.act{text-align:right}
+.linkish{background:none;border:0;padding:0;color:var(--info);font-size:12px;border-bottom:1px solid rgba(42,90,135,.3)}
+.linkish:hover{color:var(--ink)}
+
+/* ---------- pills ---------- */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:2px 7px;
+  border-radius:2px;border:1px solid transparent;white-space:nowrap}
+.pill:before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:0 0 auto;opacity:.8}
+.pill.ok{color:var(--ok);background:var(--ok-bg);border-color:#C9DBD0}
+.pill.warn{color:var(--warn);background:var(--warn-bg);border-color:#E0D3A9}
+.pill.hi{color:var(--hi);background:var(--hi-bg);border-color:#EAC9B2}
+.pill.crit{color:var(--crit);background:var(--crit-bg);border-color:#DFBAB4}
+.pill.info{color:var(--info);background:var(--info-bg);border-color:#C3D4E3}
+.pill.mut{color:var(--steel);background:#F1F3EF;border-color:#DDE2DC}
+.pill.nodot:before{display:none}
+
+/* ---------- risk matrix ---------- */
+.matrix-wrap{padding:14px}
+.mx-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
+.mx-cell{border-radius:2px;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:12px;font-weight:600;border:1px solid rgba(0,0,0,.06);cursor:pointer;
+  transition:transform .12s ease}
+.mx-cell .n{font-size:13px;line-height:1.1}
+.mx-cell .s{font-size:9px;font-weight:400;opacity:.7}
+.mx-cell:hover{transform:scale(1.03);outline:1px solid rgba(0,0,0,.4)}
+.mx-cell.sel{outline:2px solid var(--ink);outline-offset:-2px}
+.mx-cell.empty{opacity:.45}
+.mx-ax{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10.5px;color:var(--steel)}
+.mx-lbl-y{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;color:var(--steel);letter-spacing:.05em}
+.mx-axis-x{display:grid;grid-template-columns:22px repeat(5,minmax(0,1fr));gap:3px;margin-top:6px;
+  font-family:var(--mono);font-size:10.5px;color:var(--steel);text-align:center}
+.mx-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:var(--steel)}
+.mx-legend span{display:flex;align-items:center;gap:5px}
+.mx-legend i{width:10px;height:10px;display:block;border:1px solid rgba(0,0,0,.1)}
+
+/* ---------- charts ---------- */
+.chart{width:100%;height:230px}
+.chart.sm{height:180px}
+.chart.lg{height:280px}
+
+/* ---------- feed ---------- */
+.feed{list-style:none;margin:0;padding:0}
+.feed li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;padding:11px 14px;border-bottom:1px solid var(--line2)}
+.feed li:last-child{border-bottom:0}
+.feed .time{font-family:var(--mono);font-size:10.5px;color:var(--steel2);margin-top:2px}
+.feed .txt{font-size:12.5px}
+.feed .txt b{font-weight:600}
+.feed .meta{font-size:11px;color:var(--steel2);margin-top:2px}
+.feed .mark{width:3px;border-radius:1px;background:var(--line);height:100%}
+.feed .mark.crit{background:var(--crit)}
+.feed .mark.hi{background:var(--hi)}
+.feed .mark.ok{background:var(--ok)}
+.feed .mark.info{background:var(--info);}
+
+/* ---------- drawer ---------- */
+.scrim{position:fixed;inset:0;background:rgba(12,20,24,.42);z-index:60;opacity:0;pointer-events:none;
+  transition:opacity .18s ease}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,94vw);background:#fff;z-index:70;
+  border-left:1px solid var(--line);display:flex;flex-direction:column;
+  transform:translateX(102%);transition:transform .22s ease}
+.drawer.on{transform:none}
+.drawer-hd{padding:15px 18px 13px;border-bottom:1px solid var(--line);background:#F7F8F5}
+.drawer-hd .id{font-family:var(--mono);font-size:11px;color:var(--steel);display:flex;gap:8px;align-items:center}
+.drawer-hd h3{font-size:16px;margin-top:6px;line-height:1.3;padding-right:30px}
+.drawer-hd .x{position:absolute;top:14px;right:14px}
+.drawer-bd{padding:16px 18px;overflow-y:auto;flex:1}
+.drawer-ft{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;background:#FAFAF8}
+.kv{display:grid;grid-template-columns:112px minmax(0,1fr);gap:8px 10px;font-size:12.5px}
+.kv .k{color:var(--steel);font-size:11.5px}
+.block-h{font-size:11px;letter-spacing:.06em;color:var(--steel);margin:18px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--line2)}
+.ctrl-row{display:grid;grid-template-columns:minmax(0,1fr) 92px 64px;gap:10px;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--line2);font-size:12px}
+.ctrl-row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctrl-row .bar{height:5px;background:#EDEFEB;position:relative}
+.ctrl-row .bar i{position:absolute;inset:0 auto 0 0;display:block}
+.score-badge{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);background:#FAFAF8}
+.score-num{font-family:var(--mono);font-size:30px;font-weight:600;line-height:1;min-width:52px}
+.score-badge .cap{font-size:11.5px;color:var(--steel);line-height:1.45}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;z-index:80;top:50%;left:50%;transform:translate(-50%,-48%) scale(.98);
+  width:min(560px,94vw);background:#fff;border:1px solid var(--line);border-radius:3px;
+  opacity:0;pointer-events:none;transition:opacity .16s ease,transform .16s ease;
+  box-shadow:0 18px 48px rgba(10,18,22,.22)}
+.modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.modal-hd{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--line)}
+.modal-hd h3{font-size:14.5px}
+.modal-bd{padding:16px;display:grid;gap:12px}
+.modal-ft{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;background:#FAFAF8}
+.field{display:grid;gap:5px}
+.field label{font-size:11.5px;color:var(--steel)}
+.field input,.field select,.field textarea{font-family:inherit;font-size:12.5px;padding:7px 9px;
+  border:1px solid var(--line);border-radius:var(--r);background:#fff;color:var(--ink);width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid #F1C6A4;outline-offset:-1px;border-color:#E0A173}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.score-preview{display:flex;align-items:center;gap:12px;border:1px dashed var(--line);padding:9px 12px;background:#FAFAF8}
+.score-preview .v{font-family:var(--mono);font-size:20px;font-weight:600}
+.score-preview .t{font-size:11.5px;color:var(--steel)}
+
+/* ---------- bow-tie / barrier board ---------- */
+.bt-board{display:grid;grid-template-columns:minmax(0,1fr) 168px 190px 168px minmax(0,1fr);
+  gap:0;align-items:stretch;padding:16px;background:#FBFCF9}
+.bt-col{display:flex;flex-direction:column;gap:8px;justify-content:center}
+.bt-col.hd{justify-content:flex-start}
+.bt-title{font-size:10.5px;color:var(--steel);letter-spacing:.05em;margin-bottom:2px}
+.bt-node{background:#fff;border:1px solid var(--line);border-left:3px solid var(--steel2);padding:7px 9px;
+  font-size:11.5px;line-height:1.35;border-radius:2px}
+.bt-node small{display:block;font-family:var(--mono);font-size:9.5px;color:var(--steel2);margin-top:2px}
+.bt-node .sl{font-size:9.5px;font-family:var(--mono);color:var(--steel);display:block;margin-top:3px}
+.bt-hazard{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  background:var(--ink);color:#fff;padding:18px 12px;border-radius:2px;position:relative}
+.bt-hazard .lbl{font-size:9.5px;letter-spacing:.08em;color:#9FB2B4}
+.bt-hazard strong{display:block;font-size:12.5px;margin-top:6px;line-height:1.4}
+.bt-hazard .cls{font-family:var(--mono);font-size:10px;margin-top:8px;color:#E2761F}
+.bt-mid{display:flex;flex-direction:column;gap:8px;justify-content:center;padding:0 12px;position:relative}
+.bt-mid:before{content:"";position:absolute;top:14px;bottom:14px;left:0;width:1px;background:var(--line2)}
+.bt-mid:after{content:"";position:absolute;top:14px;bottom:14px;right:0;width:1px;background:var(--line2)}
+.bt-bar{background:#fff;border:1px solid var(--line);border-radius:2px;padding:6px 8px;font-size:11px;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px;align-items:center}
+.bt-bar .st{width:6px;height:6px;border-radius:50%}
+.bt-bar .nm{line-height:1.25;overflow:hidden;text-overflow:ellipsis}
+.bt-bar small{display:block;font-family:var(--mono);font-size:9px;color:var(--steel2)}
+.bt-col.hd .bt-title{align-self:center}
+
+/* ---------- copilot ---------- */
+.copilot{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px}
+.chat{display:flex;flex-direction:column;height:560px;background:#fff;border:1px solid var(--line);border-radius:var(--r)}
+.chat-bd{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;background:#FCFCFA}
+.msg{max-width:86%;font-size:12.8px;line-height:1.55}
+.msg.user{align-self:flex-end;background:var(--ink);color:#fff;padding:9px 13px;border-radius:2px}
+.msg.bot{align-self:flex-start;display:grid;gap:9px}
+.msg .who{font-size:10.5px;color:var(--steel2);font-family:var(--mono)}
+.msg.bot .bubble{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);padding:11px 13px}
+.msg.bot ul{margin:6px 0 0;padding-left:16px}
+.msg.bot li{margin-bottom:4px}
+.chat-ft{border-top:1px solid var(--line);padding:10px;display:flex;gap:8px;background:#fff}
+.chat-ft input{flex:1;border:1px solid var(--line);padding:8px 10px;font-family:inherit;font-size:12.5px;border-radius:2px;outline:0}
+.chat-ft input:focus{border-color:#E0A173;outline:2px solid #F7E4D3;outline-offset:-1px}
+.prompt-chip{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);
+  padding:8px 10px;font-size:11.5px;margin-bottom:7px;border-radius:2px;color:var(--ink)}
+.prompt-chip:hover{border-color:#C3CCC6;background:#FAFBF8}
+
+/* ---------- toast ---------- */
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,12px);z-index:90;
+  background:var(--ink);color:#fff;padding:9px 14px;font-size:12.5px;border-radius:2px;
+  display:flex;align-items:center;gap:9px;opacity:0;pointer-events:none;transition:all .2s ease}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast .tick{color:#6FBF95}
+
+/* ---------- misc ---------- */
+.split-brief{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:26px;align-items:start}
+.stat-line{display:flex;gap:18px;flex-wrap:wrap;font-size:11.5px;color:var(--steel)}
+.stat-line b{font-family:var(--mono);color:var(--ink);font-weight:600}
+.mini-h{font-size:10.5px;color:var(--steel);margin-bottom:6px}
+.hr{height:1px;background:var(--line2);margin:12px 0}
+.caption{font-size:11px;color:var(--steel2);line-height:1.5}
+.note{font-size:11.5px;color:var(--steel);background:#F7F8F5;border:1px solid var(--line2);padding:9px 11px;border-radius:2px}
+.asset-tile{display:grid;gap:9px;padding:12px 14px;border-bottom:1px solid var(--line2)}
+.asset-tile:last-child{border-bottom:0}
+.asset-tile .row1{display:flex;align-items:center;gap:8px}
+.asset-tile .nm{font-size:12.5px;font-weight:600}
+.asset-tile .sub{font-family:var(--mono);font-size:10.5px;color:var(--steel2)}
+.trend{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:11px}
+.trend.up{color:var(--crit)}
+.trend.down{color:var(--ok)}
+.trend.flat{color:var(--steel)}
+
+/* ---------- login ---------- */
+body:not(.authed) .shell{display:none}
+body.authed #login{display:none}
+.login{min-height:100vh;min-height:100dvh;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);background:var(--paper)}
+.login-left{background:var(--ink);color:#C2CFCD;padding:46px 48px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.login-left:before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 1px,transparent 1px 76px),
+  repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 76px)}
+.login-left>*{position:relative}
+.login-brand{display:flex;align-items:center;gap:11px;margin-bottom:38px}
+.login-brand .brand-mark{width:34px;height:34px}
+.login-brand strong{display:block;color:#fff;font-size:15px;letter-spacing:.06em}
+.login-brand span{display:block;font-size:10.5px;color:#8FA3A6;letter-spacing:.07em;margin-top:2px}
+.login-left h1{font-size:34px;line-height:1.22;color:#fff;letter-spacing:-.02em;max-width:470px;margin:0}
+.login-left .lead{font-size:13px;line-height:1.65;color:#9DB0AF;max-width:430px;margin:16px 0 0}
+.login-rule{height:1px;background:rgba(255,255,255,.12);margin:26px 0 20px}
+.login-stages{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 18px;max-width:470px}
+.login-stage{display:flex;gap:9px;align-items:baseline}
+.login-stage b{font-family:var(--mono);font-size:10.5px;color:#E08A44}
+.login-stage span{font-size:12px;color:#CBD8D6}
+.login-scope{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;max-width:470px}
+.login-scope span{font-family:var(--mono);font-size:10.5px;color:#AFC0BE;border:1px solid rgba(255,255,255,.16);padding:3px 8px}
+.login-foot{margin-top:auto;padding-top:30px;font-family:var(--mono);font-size:10.5px;color:#7E9296;line-height:1.9}
+.login-right{padding:46px 48px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.login-card{width:min(392px,100%);background:#fff;border:1px solid var(--line);padding:26px 26px 22px}
+.login-eyebrow{font-family:var(--mono);font-size:10.5px;color:var(--steel2);letter-spacing:.05em}
+.login-card h2{font-size:20px;margin:6px 0 4px;letter-spacing:-.015em}
+.login-card .sub{font-size:12px;color:var(--steel);margin:0 0 18px}
+.login-card .field{margin-bottom:12px}
+.login-card .field label{font-size:11.5px;color:var(--steel);display:block;margin-bottom:5px}
+.login-card input{height:40px;font-size:13px;padding:0 11px}
+.login-btn{width:100%;justify-content:center;padding:10px;margin-top:4px;font-size:13px}
+.login-err{color:var(--crit);font-size:11.5px;min-height:17px;margin-top:9px;line-height:1.45}
+.creds{border:1px dashed #D8DED9;background:#F8F9F6;padding:9px 11px;margin-top:6px}
+.creds .k{font-size:10.5px;color:var(--steel2);margin-bottom:4px}
+.creds .v{font-family:var(--mono);font-size:11px;color:var(--ink);line-height:1.7;word-break:break-all}
+.login-copy{font-size:10.5px;color:var(--steel2);text-align:center;margin-top:16px;line-height:1.7;max-width:392px}
+.login-bad{border-color:#DDB4AE;outline:2px solid #F5E2DE;outline-offset:-1px}
+
+/* ---------- lifecycle stages ---------- */
+.stages{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border-top:1px solid var(--line2)}
+.stage{padding:14px 14px 16px;border-right:1px solid var(--line2);display:grid;gap:6px;align-content:start}
+.stage:last-child{border-right:0}
+.stage .n{font-family:var(--mono);font-size:10.5px;color:var(--accent)}
+.stage .nm{font-size:12.5px;font-weight:600}
+.stage .ds{font-size:11px;color:var(--steel);line-height:1.5}
+.pillar{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid var(--line2)}
+.pillar:last-child{border-bottom:0}
+.pillar .nm{font-size:12.5px;font-weight:600}
+.pillar .ds{font-size:11.5px;color:var(--steel);line-height:1.5}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){
+  .split-brief{grid-template-columns:minmax(0,1fr)}
+  .stages{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .stage:nth-child(3n){border-right:0}
+  .cols.a,.cols.c{grid-template-columns:minmax(0,1fr)}
+  .copilot{grid-template-columns:minmax(0,1fr)}
+  .kpi-strip{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpi:nth-child(3){border-right:0}
+}
+@media (max-width:980px){
+  .login{grid-template-columns:minmax(0,1fr)}
+  .login-left{padding:30px 24px 26px}
+  .login-left h1{font-size:27px}
+  .login-left .lead{font-size:12.5px;margin-top:12px}
+  .login-brand{margin-bottom:24px}
+  .login-foot{margin-top:24px;padding-top:16px}
+  .login-right{padding:26px 18px 34px}
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:static}
+  .nav{display:flex;flex-wrap:wrap;gap:2px;padding:8px}
+  .nav-group{display:none}
+  .nav-item{width:auto;border-left:0;border-bottom:2px solid transparent;padding:8px 10px;font-size:12px}
+  .nav-item.on{border-left:0;border-bottom-color:var(--accent)}
+  .nav-item .badge{margin-left:4px}
+  .side-foot{display:none}
+  .brand{padding:12px 14px}
+  .bt-board{grid-template-columns:minmax(0,1fr);gap:10px}
+  .bt-mid{padding:0}
+  .bt-mid:before,.bt-mid:after{display:none}
+}
+@media (max-width:760px){
+  .stages{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stage{border-right:1px solid var(--line2)}
+  .stage:nth-child(2n){border-right:0}
+  .login-stages{grid-template-columns:1fr 1fr;gap:10px 14px}
+  .login-left,.login-right{padding:22px 16px}
+  .wrap{padding:14px}
+  .topbar{padding:6px 12px;gap:8px;height:auto;flex-wrap:wrap;row-gap:6px}
+  .demo-flag{display:none}
+  .tb-clock,.tb-user .r{display:none}
+  .site-pick{flex:1 1 auto;min-width:0}
+  .tb-expand{margin-left:0;width:100%;justify-content:flex-end;border-top:1px solid var(--line2);padding-top:6px}
+  .tb-user{border-left:0}
+  .kpi-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi{border-right:1px solid var(--line2)}
+  .kpi:nth-child(2n){border-right:0}
+  .kpi .lbl{white-space:normal}
+  .kpi .delta{flex-wrap:wrap}
+  .f2{grid-template-columns:1fr}
+  .msg{max-width:100%}
+  .page-hd h1{font-size:19px}
+  .page-hd .tools{margin-left:0;width:100%;flex-wrap:wrap;gap:6px}
+  .filters .search{min-width:0;width:100%}
+  .nav-item{max-width:100%}
+  .mx-legend{gap:8px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+:focus-visible{outline:2px solid #E08A44;outline-offset:1px}
+</style>
+<script src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+</head>
+<body>
+<div class="login" id="login">
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 3h4v6h6V3h4v18h-4v-8H9v8H5z" fill="#fff"/></svg>
+      </div>
+      <div>
+        <strong>HUA LU RISK</strong>
+        <span>MANAGEMENT &amp; TECHNOLOGY CONSULTING</span>
+      </div>
+    </div>
+
+    <h1>AI-enabled risk management for the energy industry.</h1>
+    <p class="lead">We combine artificial intelligence, data analytics and enterprise risk management expertise
+      so energy companies can identify emerging risks, understand potential impacts and decide faster.</p>
+
+    <div class="login-rule"></div>
+    <div class="login-stages">
+      <div class="login-stage"><b>01</b><span>Identify</span></div>
+      <div class="login-stage"><b>02</b><span>Assess</span></div>
+      <div class="login-stage"><b>03</b><span>Prioritize</span></div>
+      <div class="login-stage"><b>04</b><span>Monitor</span></div>
+      <div class="login-stage"><b>05</b><span>Report</span></div>
+      <div class="login-stage"><b>06</b><span>Decide</span></div>
+    </div>
+
+    <div class="login-scope">
+      <span>19 active risks</span><span>11 assets</span><span>6 live permits</span><span>5 critical exposures</span>
+    </div>
+
+    <div class="login-foot">
+      Operated demonstration environment — synthetic data<br>
+      Calgary, Alberta, Canada · +1 825-734-4168
+    </div>
+  </div>
+
+  <div class="login-right">
+    <form class="login-card" id="login-form" autocomplete="off" novalidate>
+      <div class="login-eyebrow">DEMO ACCESS</div>
+      <h2>Sign in to the platform</h2>
+      <p class="sub">Enter the demonstration credentials to open the oil &amp; gas risk workspace.</p>
+      <div class="field">
+        <label for="lg-user">Username</label>
+        <input id="lg-user" name="username" type="text" autocomplete="off" spellcheck="false" placeholder="Enter username">
+      </div>
+      <div class="field">
+        <label for="lg-pass">Password</label>
+        <input id="lg-pass" name="password" type="password" autocomplete="off" placeholder="Enter password">
+      </div>
+      <button class="btn primary login-btn" type="submit">Sign in</button>
+      <div class="login-err" id="login-err" role="alert"></div>
+      <div class="creds">
+        <div class="k">Access notice</div>
+        <div class="v" style="font-family:var(--sans);font-size:11.5px;color:var(--steel);line-height:1.6">
+          Demonstration access is limited to invited users. Contact the platform team if you need credentials.</div>
+      </div>
+    </form>
+    <div class="login-copy">© 2026 Hua Lu Risk Management &amp; Technology Consulting Co. All rights reserved.<br>
+      This is a product demonstration. No live customer data is processed.</div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 3h4v6h6V3h4v18h-4v-8H9v8H5z" fill="#fff"/></svg>
+      </div>
+      <div class="brand-txt">
+        <strong>HUA LU RISK</strong>
+        <span>AI-ENABLED RISK MGMT</span>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <div class="nav-group">OPERATIONS</div>
+      <button class="nav-item on" data-view="overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Risk Overview
+      </button>
+      <button class="nav-item" data-view="risks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="20" cy="18" r="2"/></svg>
+        Risk Register <span class="badge" id="nav-risk-count">16</span>
+      </button>
+      <button class="nav-item" data-view="barriers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l8 4v6c0 4-3.4 7-8 8-8-4-8-8V7z"/><path d="M8 11h8M8 15h5"/></svg>
+        Barriers &amp; Bow-ties
+      </button>
+      <button class="nav-item" data-view="permits">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="4" width="14" height="17"/><path d="M9 4h6v3H9zM8 12h8M8 16h5"/></svg>
+        Permit to Work
+      </button>
+      <button class="nav-item" data-view="integrity">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3l7 4v10l-7 4-7-4V7z"/><path d="M7 7l7 4 7-4M14 11v10"/></svg>
+        Asset Integrity
+      </button>
+
+      <div class="nav-group">ASSURANCE</div>
+      <button class="nav-item" data-view="incidents">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l9 16H3z"/><path d="M12 9v4M12 16h.01"/></svg>
+        Incidents
+      </button>
+      <button class="nav-item" data-view="compliance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h9a3 3 0 013 3v12a3 3 0 00-3-3H4z"/><path d="M20 5h-4a3 3 0 00-3 3"/></svg>
+        Compliance &amp; Audit
+      </button>
+      <div class="nav-group">PRODUCT</div>
+      <button class="nav-item" data-view="about">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 11.5h1V16"/></svg>
+        Platform brief
+      </button>
+      <button class="nav-item" data-view="copilot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.2 5.1 5.5.6-4.1 3.7 1.2 5.4-4.8-2.7-4.8 2.7 1.2-5.4L4.3 8.7l5.5-.6z"/></svg>
+        AI Risk Copilot
+      </button>
+    </nav>
+
+    <div class="side-foot">
+      <div class="sf-line"><span class="dot"></span>Platform online<span class="sf-v">v2.5.0</span></div>
+      <div class="sf-line sf-dim">Synced 04:12 · 11 assets</div>
+      <div class="sf-line sf-dim">Data residency: Canada</div>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div style="min-width:0">
+
+    <header class="topbar">
+      <div class="site-pick">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#5E6E70" stroke-width="1.6"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+        <div style="min-width:0">
+          <span class="k">Site</span>
+          <div class="v">Athabasca SAGD — Central Plant</div>
+        </div>
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#5E6E70" stroke-width="1.8"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <span class="demo-flag">DEMO ENVIRONMENT · SYNTHETIC DATA</span>
+
+      <div class="tb-expand">
+        <span class="tb-clock" id="clock">--:--:-- MST</span>
+        <button class="icon-btn" title="Search assets, risks, permits">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="6"/><path d="M16 16l4.5 4.5"/></svg>
+        </button>
+        <button class="icon-btn" title="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 9a6 6 0 0112 0v4l2 3H4l2-3z"/><path d="M10 19a2 2 0 004 0"/></svg>
+        </button>
+        <button class="icon-btn" id="signout" title="Sign out of the demo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M15 4h4v16h-4"/><path d="M11 8l-4 4 4 4M7 12h9"/></svg>
+        </button>
+        <div class="tb-user">
+          <div class="avatar">RD</div>
+          <div>
+            <div class="n">R. Desjardins</div>
+            <div class="r">Site Risk Lead</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div id="views">
+      <!-- ================= VIEW: OVERVIEW ================= -->
+      <section class="view on" id="v-overview">
+        <div class="page-hd">
+          <div>
+            <h1>Risk Overview</h1>
+            <div class="sub">Athabasca SAGD · Central Plant · Operating week 46 · Updated 04:12 MST</div>
+          </div>
+          <div class="tools">
+            <button class="btn" data-act="export">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>
+              Export board pack
+            </button>
+            <button class="btn accent" data-act="new-risk">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Raise risk
+            </button>
+          </div>
+        </div>
+
+        <div class="kpi-strip">
+          <div class="kpi">
+            <div class="lbl">Open risks in register</div>
+            <div class="val" id="kpi-open">–</div>
+            <div class="delta"><span class="up">▲ 2</span> vs last week</div>
+            <div class="bar"><i style="width:100%"></i></div>
+          </div>
+          <div class="kpi">
+            <div class="lbl">Critical + high exposures</div>
+            <div class="val" id="kpi-high">–</div>
+            <div class="delta"><span class="up">▲ 1</span> new this week</div>
+            <div class="bar"><i id="kpi-high-bar" style="width:0"></i></div>
+          </div>
+          <div class="kpi">
+            <div class="lbl">Overdue control actions</div>
+            <div class="val" id="kpi-overdue">–</div>
+            <div class="delta"><span class="up">4</span> &gt; 30 days past due</div>
+            <div class="bar"><i id="kpi-overdue-bar" style="width:0"></i></div>
+          </div>
+          <div class="kpi">
+            <div class="lbl">Barrier health index</div>
+            <div class="val" id="kpi-barrier">–<i>%</i></div>
+            <div class="delta"><span class="down">▼ 3</span> firewater pump test</div>
+            <div class="bar"><i id="kpi-barrier-bar" style="width:0"></i></div>
+          </div>
+          <div class="kpi">
+            <div class="lbl">Permit compliance</div>
+            <div class="val" id="kpi-permit">–<i>%</i></div>
+            <div class="delta">6 of 21 permits with open conditions</div>
+            <div class="bar"><i id="kpi-permit-bar" style="width:0"></i></div>
+          </div>
+        </div>
+
+        <div class="cols a">
+          <div class="panel">
+            <div class="panel-hd">
+              <h2>Top open exposures</h2>
+              <span class="hint">Residual score · 5×5 matrix</span>
+              <div class="right">
+                <button class="btn sm" data-goto="risks">Open register</button>
+              </div>
+            </div>
+            <div class="tbl-wrap">
+              <table class="tbl ov">
+                <colgroup>
+                  <col style="width:28%"><col style="width:15%"><col style="width:13%">
+                  <col style="width:8%"><col style="width:15%"><col style="width:21%">
+                </colgroup>
+                <thead>
+                  <tr><th>Risk</th><th>Asset</th><th>Category</th><th>Score</th><th>Owner</th><th>Status</th></tr>
+                </thead>
+                <tbody id="top-exposures"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-hd">
+              <h2>Residual risk matrix</h2>
+              <div class="right"><span class="hint">Click a cell to filter</span></div>
+            </div>
+            <div class="matrix-wrap">
+              <div style="display:grid;grid-template-columns:22px minmax(0,1fr)">
+                <div class="mx-lbl-y" style="display:flex;align-items:center;justify-content:center">Likelihood</div>
+                <div id="mx-grid" class="mx-grid"></div>
+              </div>
+              <div class="mx-axis-x" id="mx-axis"></div>
+              <div class="mx-legend">
+                <span><i style="background:#E1EBE3"></i>Low 1–4</span>
+                <span><i style="background:#F3ECD4"></i>Medium 5–9</span>
+                <span><i style="background:#F6E2D0"></i>High 10–14</span>
+                <span><i style="background:#EFD6CF"></i>Critical 15–25</span>
+              </div>
+              <div class="caption" style="margin-top:10px" id="mx-caption">16 assessments in scope · residual scores after credited controls</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cols b" style="margin-top:16px">
+          <div class="panel">
+            <div class="panel-hd">
+              <h2>Leading indicators</h2>
+              <span class="hint">12-month rolling</span>
+            </div>
+            <div class="panel-bd"><div class="chart" id="chart-trend"></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd">
+              <h2>Assurance activity</h2>
+              <div class="right"><span class="pill mut nodot">live feed (demo)</span></div>
+            </div>
+            <ul class="feed" id="feed"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW: RISK REGISTER ================= -->
+      <section class="view" id="v-risks">
+        <div class="page-hd">
+          <div>
+            <h1>Risk Register</h1>
+            <div class="sub">Enterprise register · ISO 31000 aligned · operational, market and supply-chain exposure</div>
+          </div>
+          <div class="tools">
+            <button class="btn" data-act="export">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>
+              Export CSV
+            </button>
+            <button class="btn accent" data-act="new-risk">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Raise risk
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="filters">
+            <div class="search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M16 16l4.5 4.5"/></svg>
+              <input id="risk-search" placeholder="Search ID, risk, owner" aria-label="Search risk register">
+            </div>
+            <div id="cat-chips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+            <div class="spacer"></div>
+            <div class="stat-line"><span>Showing <b id="risk-count">19</b> of <b id="risk-total">19</b></span></div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <colgroup>
+                <col style="width:12%"><col style="width:21%"><col style="width:13%">
+                <col style="width:12%"><col style="width:5%"><col style="width:5%">
+                <col style="width:7%"><col style="width:11%"><col style="width:14%">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>ID</th><th>Risk event</th><th>Asset / area</th><th>Category</th>
+                  <th>L</th><th>C</th><th>Score</th><th>Owner</th><th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="risk-rows"></tbody>
+            </table>
+          </div>
+          <div class="panel-hd" style="border-top:1px solid var(--line2);border-bottom:0">
+            <span class="caption">Scores are residual (after credited controls). L = likelihood 1–5, C = consequence 1–5.</span>
+            <div class="right"><span class="pill info nodot">Registers reviewed weekly</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW: BARRIERS ================= -->
+      <section class="view" id="v-barriers">
+        <div class="page-hd">
+          <div>
+            <h1>Barriers &amp; Bow-ties</h1>
+            <div class="sub">Safety-critical elements · barrier health and impairment status</div>
+          </div>
+          <div class="tools">
+            <span class="pill hi">1 impaired barrier set</span>
+            <button class="btn" data-act="export">Print bow-tie</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd">
+            <h2>BT-04 · Loss of containment, H&#8322;S release at inlet separation</h2>
+            <div class="right"><span class="pill crit">Residual 20 · critical</span></div>
+          </div>
+          <div class="bt-board" id="bowtie"></div>
+          <div class="panel-hd" style="border-top:1px solid var(--line2);border-bottom:0">
+            <span class="caption">Barrier status is synced from inspection, permit and maintenance records. A degraded barrier removes its credit from the risk score.</span>
+          </div>
+        </div>
+
+        <div class="cols c" style="margin-top:16px">
+          <div class="panel">
+            <div class="panel-hd">
+              <h2>Safety-critical elements</h2>
+              <span class="hint">Barrier health index <b id="bh-index" class="mono">–</b></span>
+            </div>
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <colgroup>
+                  <col style="width:38%"><col style="width:16%"><col style="width:14%"><col style="width:16%"><col style="width:16%">
+                </colgroup>
+                <thead><tr><th>Element</th><th>Function</th><th>Test</th><th>Last verified</th><th>Health</th></tr></thead>
+                <tbody id="sce-rows"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><h2>Barrier health by safety function</h2></div>
+            <div class="panel-bd"><div class="chart sm" id="chart-barrier"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW: PERMITS ================= -->
+      <section class="view" id="v-permits">
+        <div class="page-hd">
+          <div>
+            <h1>Permit to Work</h1>
+            <div class="sub">21 permits in window · 3 awaiting authorization · 2 isolation conflicts</div>
+          </div>
+          <div class="tools">
+            <button class="btn" data-act="export">Export permit log</button>
+            <button class="btn accent" data-act="new-permit">Request permit</button>
+          </div>
+        </div>
+
+        <div class="kpi-strip" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+          <div class="kpi"><div class="lbl">Active permits</div><div class="val" id="p-active">–</div><div class="delta">Across 4 work fronts</div></div>
+          <div class="kpi"><div class="lbl">Awaiting authorization</div><div class="val" id="p-wait">–</div><div class="delta"><span class="up">▲ 1</span> aged &gt; 4 h</div></div>
+          <div class="kpi"><div class="lbl">Isolation conflicts</div><div class="val" id="p-conf">–</div><div class="delta"><span class="up">CPI-118 double-booked</span></div></div>
+          <div class="kpi"><div class="lbl">Simultaneous operations</div><div class="val" id="p-simo">–</div><div class="delta">SIMO review required</div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd">
+            <h2>Permit board</h2>
+            <div class="right"><span class="hint">Validity shown in local time (MST)</span></div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <colgroup>
+                <col style="width:11%"><col style="width:20%"><col style="width:10%"><col style="width:13%">
+                <col style="width:11%"><col style="width:10%"><col style="width:13%"><col style="width:12%">
+              </colgroup>
+              <thead><tr><th>Permit</th><th>Scope of work</th><th>Type</th><th>Location</th><th>Validity</th><th>Isolation</th><th>Status</th><th></th></thead>
+              <tbody id="permit-rows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="cols b" style="margin-top:16px">
+          <div class="panel">
+            <div class="panel-hd"><h2>Control conflicts detected</h2><div class="right"><span class="pill crit nodot">2 open</span></div></div>
+            <div class="panel-bd" id="conflicts"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><h2>Permit conditions tracked this week</h2></div>
+            <div class="panel-bd"><div class="chart sm" id="chart-permit"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW: INTEGRITY ================= -->
+      <section class="view" id="v-integrity">
+        <div class="page-hd">
+          <div>
+            <h1>Asset Integrity</h1>
+            <div class="sub">Mechanical integrity programme · 118 tagged assets · API 570 / CSA Z662 basis</div>
+          </div>
+          <div class="tools">
+            <span class="pill warn">3 inspections overdue</span>
+            <button class="btn" data-act="export">Download inspection plan</button>
+          </div>
+        </div>
+
+        <div class="cols a">
+          <div class="panel">
+            <div class="panel-hd">
+              <h2>Remaining life vs corrosion allowance</h2>
+              <div class="right"><span class="hint">Selected assets · mm</span></div>
+            </div>
+            <div class="panel-bd"><div class="chart lg" id="chart-integrity"></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><h2>Inspection queue</h2><div class="right"><button class="btn sm" data-goto="permits">Plan work</button></div></div>
+            <div id="inspection-list"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd">
+            <h2>Equipment register</h2>
+            <span class="hint">Corrosion rate from last three thickness surveys</span>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <colgroup>
+                <col style="width:10%"><col style="width:22%"><col style="width:13%"><col style="width:9%">
+                <col style="width:9%"><col style="width:12%"><col style="width:12%"><col style="width:13%">
+              </colgroup>
+              <thead><tr><th>Tag</th><th>Description</th><th>Service</th><th>t<sub>min</sub></th><th>t<sub>actual</sub></th><th>Corrosion rate</th><th>Remaining life</th><th>Next inspection</th></tr></thead>
+              <tbody id="asset-rows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW: INCIDENTS ================= -->
+      <section class="view" id="v-incidents">
+        <div class="page-hd">
+          <div>
+            <h1>Incidents &amp; Near-misses</h1>
+            <div class="sub">Event intake, classification and investigation tracking</div>
+          </div>
+          <div class="tools">
+            <span class="pill info">TRIR 0.64 rolling 12-month</span>
+            <button class="btn accent" data-act="report-event">Report event</button>
+          </div>
+        </div>
+
+        <div class="kpi-strip" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+          <div class="kpi"><div class="lbl">Events this month</div><div class="val" id="i-month">–</div><div class="delta"><span class="down">▼ 2</span> vs October</div></div>
+          <div class="kpi"><div class="lbl">Open investigations</div><div class="val" id="i-open">–</div><div class="delta">1 past 30-day milestone</div></div>
+          <div class="kpi"><div class="lbl">Days since recordable</div><div class="val" id="i-days">–</div><div class="delta">Previous: 41 days</div></div>
+          <div class="kpi"><div class="lbl">Repeat causes identified</div><div class="val" id="i-repeat">–</div><div class="delta">Barrier degradation linked</div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><h2>Event log</h2>
+            <div class="right"><span class="hint">Most recent first</span></div></div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <colgroup>
+                <col style="width:11%"><col style="width:27%"><col style="width:13%">
+                <col style="width:11%"><col style="width:12%"><col style="width:26%">
+              </colgroup>
+              <thead><tr><th>Ref</th><th>Event</th><th>Location</th><th>Class</th><th>Date</th><th>Investigation</th></tr></thead>
+              <tbody id="incident-rows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="cols b" style="margin-top:16px">
+          <div class="panel">
+            <div class="panel-hd"><h2>Event pyramid</h2><span class="hint">Rolling 12 months</span></div>
+            <div class="panel-bd"><div class="chart sm" id="chart-incident"></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><h2>Open investigations</h2>
+              <div class="right"><span class="pill hi nodot">1 past milestone</span></div></div>
+            <div id="inv-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW: COMPLIANCE ================= -->
+      <section class="view" id="v-compliance">
+        <div class="page-hd">
+          <div>
+            <h1>Compliance &amp; Audit</h1>
+            <div class="sub">Obligation register · AER, Alberta OHS, CSA Z662, ISO 45001</div>
+          </div>
+          <div class="tools">
+            <span class="pill warn">4 findings open</span>
+            <button class="btn" data-act="export">Assurance pack</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><h2>Obligation coverage</h2><div class="right"><span class="hint">Evidence completeness across 7 obligations</span></div></div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <colgroup>
+                <col style="width:26%"><col style="width:17%"><col style="width:15%">
+                <col style="width:13%"><col style="width:17%"><col style="width:12%">
+              </colgroup>
+              <thead><tr><th>Obligation</th><th>Framework</th><th>Accountable</th><th>Last verified</th><th>Evidence coverage</th><th>Findings</th></tr></thead>
+              <tbody id="compliance-rows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="cols b" style="margin-top:16px">
+          <div class="panel">
+            <div class="panel-hd"><h2>Open audit findings</h2><div class="right"><span class="pill hi nodot">Priority order</span></div></div>
+            <div class="tbl-wrap">
+              <table class="tbl compact">
+                <colgroup><col style="width:16%"><col style="width:30%"><col style="width:14%"><col style="width:13%"><col style="width:27%"></colgroup>
+                <thead><tr><th>Ref</th><th>Finding</th><th>Source</th><th>Due</th><th>Status</th></tr></thead>
+                <tbody id="finding-rows"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><h2>Regulatory change watch</h2><div class="right"><span class="hint">Curated, demo content</span></div></div>
+            <div class="panel-bd">
+              <div class="asset-tile" style="padding:0 0 12px">
+                <div class="row1"><span class="pill info nodot">AER</span><span class="nm">Directive 071 — emergency response plans</span></div>
+                <div class="caption">Epilogue exercise documentation now requires barrier-level evidence; plant ERP refresh scheduled Q1 2027.</div>
+              </div>
+              <div class="asset-tile" style="padding:12px 0 0">
+                <div class="row1"><span class="pill info nodot">CSA</span><span class="nm">Z662-23 — pipeline integrity clauses</span></div>
+                <div class="caption">Assessment intervals shortened for class-2 locations with sustained pressure cycling; affects PL-7 segment.</div>
+              </div>
+              <div class="asset-tile" style="padding:12px 0">
+                <div class="row1"><span class="pill info nodot">OHS</span><span class="nm">Fatigue management guidance</span></div>
+                <div class="caption">Shift-length and rest-period expectations tightened for safety-critical roles; applies to control room rosters.</div>
+              </div>
+              <div class="note" style="margin-top:12px">Guidance shown is illustrative for the demo and is not a legal interpretation.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW: COPILOT ================= -->
+      <section class="view" id="v-copilot">
+        <div class="page-hd">
+          <div>
+            <h1>AI Risk Copilot</h1>
+            <div class="sub">Grounded on register, barrier and inspection records · read-only advisory</div>
+          </div>
+          <div class="tools"><span class="pill mut nodot">Answers cite register IDs</span></div>
+        </div>
+
+        <div class="copilot">
+          <div class="chat">
+            <div class="chat-bd" id="chat-bd"></div>
+            <div class="chat-ft">
+              <input id="chat-input" placeholder="Ask about exposures, barriers, inspections or compliance…" aria-label="Ask the risk copilot">
+              <button class="btn primary" id="chat-send">Send</button>
+            </div>
+          </div>
+          <div>
+            <div class="panel">
+              <div class="panel-hd"><h2>Suggested questions</h2></div>
+              <div class="panel-bd" id="prompt-list"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-hd"><h2>Model-detected signals</h2></div>
+              <div class="panel-bd" id="signals"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW: PLATFORM BRIEF ================= -->
+      <section class="view" id="v-about">
+        <div class="page-hd">
+          <div>
+            <h1>Platform Brief</h1>
+            <div class="sub">Hua Lu Risk Management &amp; Technology Consulting Co. · Calgary, Alberta · energy focus</div>
+          </div>
+          <div class="tools"><span class="pill mut nodot">Demo build 2.6</span></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-bd split-brief">
+            <div>
+              <h2 style="font-size:16px;margin-bottom:8px">AI-enabled risk management for the energy industry</h2>
+              <p class="caption" style="font-size:12.8px;color:var(--steel);margin:0 0 10px">
+                Hua Lu Risk Management &amp; Technology Consulting Co. develops AI-enabled risk management technology
+                that helps organizations identify emerging risks, understand potential impacts and make faster,
+                better-informed decisions.
+              </p>
+              <p class="caption" style="font-size:12.8px;color:var(--steel);margin:0">
+                The platform combines artificial intelligence, data analytics and enterprise risk management
+                methodology to help energy companies identify, assess, monitor and manage complex risk. Critical
+                risk information that usually sits across spreadsheets, reports, legacy systems and business
+                functions is brought into a single, continuously updated view.
+              </p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line2);border:1px solid var(--line2)">
+              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Lifecycle stages</div><div class="mono" style="font-size:20px;font-weight:600">6</div></div>
+              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Capability pillars</div><div class="mono" style="font-size:20px;font-weight:600">4</div></div>
+              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Platform modules</div><div class="mono" style="font-size:20px;font-weight:600">7</div></div>
+              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Demo assets</div><div class="mono" style="font-size:20px;font-weight:600">118</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><h2>Risk management lifecycle</h2>
+            <div class="right"><span class="hint">From periodic assessment to continuous management</span></div></div>
+          <div class="stages">
+            <div class="stage"><div class="n">01</div><div class="nm">Identify</div>
+              <div class="ds">Surface potential risks from structured and unstructured information.</div></div>
+            <div class="stage"><div class="n">02</div><div class="nm">Assess</div>
+              <div class="ds">Analyse likelihood, potential impact and interdependencies.</div></div>
+            <div class="stage"><div class="n">03</div><div class="nm">Prioritize</div>
+              <div class="ds">Focus attention on the risks with the greatest business significance.</div></div>
+            <div class="stage"><div class="n">04</div><div class="nm">Monitor</div>
+              <div class="ds">Track changing risk conditions and emerging patterns.</div></div>
+            <div class="stage"><div class="n">05</div><div class="nm">Report</div>
+              <div class="ds">Turn complex risk information into structured management insight.</div></div>
+            <div class="stage"><div class="n">06</div><div class="nm">Decide</div>
+              <div class="ds">Support faster, better-informed business and risk decisions.</div></div>
+          </div>
+        </div>
+
+        <div class="cols b" style="margin-top:16px">
+          <div class="panel">
+            <div class="panel-hd"><h2>What the platform brings</h2></div>
+            <div class="panel-bd" style="padding-top:6px;padding-bottom:8px">
+              <div class="pillar"><div class="nm">Artificial intelligence</div>
+                <div class="ds">Pattern detection across complex, unstructured risk information.</div></div>
+              <div class="pillar"><div class="nm">Data analytics</div>
+                <div class="ds">Integration and analysis of risk data from multiple sources.</div></div>
+              <div class="pillar"><div class="nm">Risk methodologies</div>
+                <div class="ds">Enterprise risk frameworks backed by practical industry experience.</div></div>
+              <div class="pillar"><div class="nm">Decision support</div>
+                <div class="ds">Structured insight on exposure and potential business impact.</div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><h2>The problem it replaces</h2>
+              <div class="right"><span class="pill warn nodot">Fragmented risk data</span></div></div>
+            <div class="panel-bd">
+              <div class="kv" style="grid-template-columns:1fr 1fr;gap:8px 20px">
+                <div class="k" style="color:var(--ink)">Fragmented records</div><div class="k" style="color:var(--ink)">Manual tracking</div>
+                <div class="k" style="color:var(--ink)">Periodic assessment</div><div class="k" style="color:var(--ink)">Data-intensive reporting</div>
+                <div class="k" style="color:var(--ink)">Difficult to scale</div><div class="k" style="color:var(--ink)">Slow response to emerging risk</div>
+              </div>
+              <div class="note" style="margin-top:12px">Risk information spread across spreadsheets, reports, legacy systems and functions
+                makes exposure hard to see until it has already materialised.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><h2>Module map</h2>
+            <div class="right"><span class="hint">Which lifecycle stage each module serves</span></div></div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <colgroup><col style="width:19%"><col style="width:17%"><col style="width:64%"></colgroup>
+              <thead><tr><th>Module</th><th>Lifecycle stage</th><th>What it does</th></tr></thead>
+              <tbody>
+                <tr><td><b>Risk register</b></td><td class="mono" style="font-size:11px">Assess · Prioritize</td>
+                  <td>5×5 and quantitative scoring, inherent-to-residual roll-up, control credit tracking, board-level export</td></tr>
+                <tr><td><b>Barriers &amp; bow-ties</b></td><td class="mono" style="font-size:11px">Monitor</td>
+                  <td>Safety-critical element register, barrier health from tests and faults, impairment escalation to the register</td></tr>
+                <tr><td><b>Permit to work</b></td><td class="mono" style="font-size:11px">Monitor</td>
+                  <td>Permit types, isolation binding, simultaneous-operations and conflict checks</td></tr>
+                <tr><td><b>Asset integrity</b></td><td class="mono" style="font-size:11px">Identify · Monitor</td>
+                  <td>Thickness surveys, corrosion rates, remaining life, risk-based inspection intervals</td></tr>
+                <tr><td><b>Incidents</b></td><td class="mono" style="font-size:11px">Identify · Report</td>
+                  <td>Intake, classification, investigation workflow, repeat-cause detection</td></tr>
+                <tr><td><b>Compliance &amp; audit</b></td><td class="mono" style="font-size:11px">Report · Decide</td>
+                  <td>Obligation register, evidence coverage, audit findings and due dates</td></tr>
+                <tr><td><b>AI risk copilot</b></td><td class="mono" style="font-size:11px">Decide</td>
+                  <td>Register-grounded answers, barrier gap detection, draft notifications with citations</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="cols b" style="margin-top:16px">
+          <div class="panel">
+            <div class="panel-hd"><h2>Where it is applied</h2>
+              <div class="right"><span class="hint">Energy industry focus</span></div></div>
+            <div class="panel-bd">
+              <div class="asset-tile" style="padding:0 0 12px;grid-template-columns:96px minmax(0,1fr)">
+                <div class="mono" style="font-size:11px;color:var(--steel)">UPSTREAM</div>
+                <div><b style="font-size:12.5px">Well pads, SAGD, workovers</b>
+                  <div class="caption">Well control, H₂S exposure, pad logistics, water handling</div></div>
+              </div>
+              <div class="asset-tile" style="padding:12px 0;grid-template-columns:96px minmax(0,1fr)">
+                <div class="mono" style="font-size:11px;color:var(--steel)">MIDSTREAM</div>
+                <div><b style="font-size:12.5px">Gathering lines and processing</b>
+                  <div class="caption">Pipeline integrity, corrosion, compression, flaring</div></div>
+              </div>
+              <div class="asset-tile" style="padding:12px 0 0;grid-template-columns:96px minmax(0,1fr)">
+                <div class="mono" style="font-size:11px;color:var(--steel)">DOWNSTREAM</div>
+                <div><b style="font-size:12.5px">Tank farms and terminals</b>
+                  <div class="caption">Overfill protection, venting, loading, emergency response</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><h2>Contact &amp; assurance</h2></div>
+            <div class="panel-bd">
+              <div class="kv" style="grid-template-columns:112px minmax(0,1fr)">
+                <div class="k">Company</div><div>Hua Lu Risk Management &amp; Technology Consulting Co.</div>
+                <div class="k">Email</div><div class="mono" style="font-size:11.5px">hualuriskmanagementtech@gmail.com</div>
+                <div class="k">Phone</div><div class="mono" style="font-size:11.5px">+1 825-734-4168</div>
+                <div class="k">Location</div><div>Calgary, Alberta, Canada</div>
+                <div class="k">Deployment</div><div>Customer-hosted or private cloud; data residency by region</div>
+                <div class="k">Access control</div><div>Role-based, per asset and per register; full audit trail</div>
+              </div>
+              <div class="note" style="margin-top:12px">This build is a demonstration: synthetic data, browser-only session,
+                no live connectors and no customer records.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="drawer" id="drawer" aria-hidden="true"></div>
+<div class="modal" id="modal" aria-hidden="true"></div>
+<div class="toast" id="toast"><span class="tick">✓</span><span id="toast-txt"></span></div>
+<script>
+/* ============================================================
+   HUALU RISK — demo dataset (synthetic)
+   All names, people and figures are fictional sample data.
+   ============================================================ */
+const RISKS = [
+  {id:"RSK-2026-014", title:"H\u2082S release during pigging at inlet separator", asset:"CPF \u00B7 Inlet separation", cat:"Process Safety", L:4, C:5, owner:"J. Whitmore", status:"Mitigating", controls:5, review:"2026-11-18"},
+  {id:"RSK-2026-021", title:"Overpressure of tank T-104 from blocked vent", asset:"Tank Farm \u00B7 T-104", cat:"Mechanical Integrity", L:3, C:5, owner:"A. Nakamura", status:"Controls in place", controls:4, review:"2026-12-02"},
+  {id:"RSK-2026-033", title:"Corrosion under insulation, 6in flowline PL-7", asset:"PL-7 \u00B7 KP 12.4", cat:"Mechanical Integrity", L:4, C:4, owner:"D. Okonkwo", status:"Monitoring", controls:3, review:"2026-11-20"},
+  {id:"RSK-2026-041", title:"Hot work adjacent to live hydrocarbon line", asset:"Turnaround \u00B7 Unit 21", cat:"Permit & Work Control", L:3, C:4, owner:"M. Haddad", status:"Mitigating", controls:5, review:"2026-11-17"},
+  {id:"RSK-2026-052", title:"Loss of well control during workover, Pad 12", asset:"Well Pad 12", cat:"Process Safety", L:3, C:5, owner:"S. Bergeron", status:"Mitigating", controls:4, review:"2026-11-25"},
+  {id:"RSK-2026-058", title:"Glycol carry-over causing hydrate in sales gas", asset:"Gas Processing \u00B7 E-201", cat:"Process Safety", L:3, C:3, owner:"L. Chen", status:"Controls in place", controls:4, review:"2026-12-09"},
+  {id:"RSK-2026-067", title:"Fatigue-related operator error on night shift", asset:"Control Room \u00B7 CPF", cat:"Human Factors", L:4, C:3, owner:"R. Desjardins", status:"Mitigating", controls:2, review:"2026-11-19"},
+  {id:"RSK-2026-074", title:"Phishing against SCADA remote-access users", asset:"IT/OT \u00B7 CPF network", cat:"Cyber", L:3, C:4, owner:"T. Mbeki", status:"Monitoring", controls:3, review:"2026-12-16"},
+  {id:"RSK-2026-081", title:"Produced-water spill into muskeg during winter access", asset:"Water Handling \u00B7 Pad 12", cat:"Environment", L:3, C:4, owner:"K. Sutherland", status:"Mitigating", controls:3, review:"2026-11-30"},
+  {id:"RSK-2026-088", title:"Emergency response plan not aligned to asset inventory", asset:"Site-wide", cat:"Regulatory", L:2, C:4, owner:"J. Whitmore", status:"Action assigned", controls:2, review:"2026-12-15"},
+  {id:"RSK-2026-092", title:"Flare pilot instability under high wind", asset:"Flare System \u00B7 F-1", cat:"Process Safety", L:3, C:3, owner:"A. Nakamura", status:"Controls in place", controls:3, review:"2027-01-08"},
+  {id:"RSK-2026-095", title:"Third-party encroachment on pipeline right-of-way", asset:"PL-7 \u00B7 ROW", cat:"Logistics", L:2, C:5, owner:"D. Okonkwo", status:"Monitoring", controls:2, review:"2026-12-01"},
+  {id:"RSK-2026-103", title:"Lift plan deviation during compressor module swap", asset:"CS-4 \u00B7 Compressor bay", cat:"Permit & Work Control", L:3, C:4, owner:"M. Haddad", status:"Mitigating", controls:4, review:"2026-11-18"},
+  {id:"RSK-2026-110", title:"Firewater pump fails performance test", asset:"Fire Protection \u00B7 P-101", cat:"Mechanical Integrity", L:3, C:5, owner:"S. Bergeron", status:"Mitigating", controls:2, review:"2026-11-16"},
+  {id:"RSK-2026-118", title:"Emissions above threshold from tank venting", asset:"Tank Farm \u00B7 vent header", cat:"Environment", L:3, C:3, owner:"K. Sutherland", status:"Monitoring", controls:3, review:"2026-12-11"},
+  {id:"RSK-2026-121", title:"Temporary power cable routed through classified area", asset:"CPF \u00B7 Utilities", cat:"Permit & Work Control", L:2, C:4, owner:"T. Mbeki", status:"Action assigned", controls:2, review:"2026-11-21"},
+  {id:"RSK-2026-127", title:"Feed gas price volatility compresses turnaround budget", asset:"Enterprise \u00B7 Commercial", cat:"Market & Financial", L:3, C:4, owner:"L. Chen", status:"Monitoring", controls:2, review:"2026-12-20"},
+  {id:"RSK-2026-131", title:"Single-source lead time for compressor spare parts", asset:"Supply Chain \u00B7 CS-4", cat:"Supply Chain", L:4, C:3, owner:"T. Mbeki", status:"Monitoring", controls:2, review:"2026-12-04"},
+  {id:"RSK-2026-134", title:"Carbon price exposure on emissions intensity", asset:"Enterprise \u00B7 Emissions", cat:"Market & Financial", L:2, C:4, owner:"K. Sutherland", status:"Action assigned", controls:1, review:"2027-01-15"}
+].map(r => Object.assign(r, {score: r.L * r.C}));
+
+const SCE = [
+  {tag:"P-101", name:"Firewater pump, diesel driver", fn:"Mitigation", test:"Annual flow test", last:"2026-10-28", health:"Failed"},
+  {tag:"GD-12", name:"Combustible gas detection, inlet", fn:"Detection", test:"Quarterly bump test", last:"2026-09-14", health:"Degraded"},
+  {tag:"XV-204", name:"ESD isolation valve, inlet", fn:"Prevention", test:"Partial stroke", last:"2026-11-06", health:"Healthy"},
+  {tag:"PSV-311", name:"Relief valve, T-104", fn:"Mitigation", test:"Bench test", last:"2026-08-19", health:"Healthy"},
+  {tag:"H2S-07", name:"Personal H\u2082S monitors, field ops", fn:"Detection", test:"Monthly calibration", last:"2026-10-02", health:"Degraded"},
+  {tag:"DL-21", name:"Deluge system, compressor bay", fn:"Emergency response", test:"Annual trip test", last:"2026-07-11", health:"Healthy"}
+];
+
+const ASSETS = [
+  {tag:"V-101", desc:"Inlet separator, 3-phase", service:"Wet sour gas", tmin:12.7, t:13.9, rate:0.18, life:6.7, next:"2027-03-14", status:"ok"},
+  {tag:"T-104", desc:"Produced water tank, API 12F", service:"Produced water", tmin:8.0, t:9.2, rate:0.31, life:3.9, next:"2026-12-02", status:"warn"},
+  {tag:"PL-7", desc:"6in flowline, KP 12.4", service:"Sour emulsion", tmin:5.6, t:6.1, rate:0.09, life:5.4, next:"2027-05-08", status:"ok"},
+  {tag:"E-201", desc:"Glycol reboiler shell", service:"Lean glycol", tmin:10.2, t:10.9, rate:0.11, life:6.4, next:"2027-02-19", status:"ok"},
+  {tag:"V-204", desc:"Flare knock-out drum", service:"Relief gas", tmin:9.5, t:11.4, rate:0.05, life:38.0, next:"2028-06-30", status:"ok"},
+  {tag:"HDR-3", desc:"Produced water header, CS", service:"Produced water", tmin:6.4, t:6.55, rate:0.13, life:1.2, next:"2026-10-30", status:"crit"}
+];
+
+let PERMITS = [
+  {id:"PTW-2026-4412", scope:"Compressor module 3 lift and swap", type:"Lift", loc:"CS-4 \u00B7 Compressor bay", window:"06:00\u201318:00", iso:"CPI-118", status:"Approved", conditions:2},
+  {id:"PTW-2026-4419", scope:"Hot work \u2014 weld repair, produced water line", type:"Hot Work", loc:"Water Handling \u00B7 Pad 12", window:"07:00\u201315:00", iso:"CPI-204", status:"Awaiting authorization", conditions:4},
+  {id:"PTW-2026-4423", scope:"Confined space entry \u2014 T-104 internal inspection", type:"Confined Space", loc:"Tank Farm \u00B7 T-104", window:"08:00\u201314:00", iso:"CPI-118", status:"Awaiting authorization", conditions:5},
+  {id:"PTW-2026-4408", scope:"Instrument calibration, inlet separator", type:"Cold Work", loc:"CPF \u00B7 Inlet separation", window:"06:00\u201320:00", iso:"None required", status:"Active", conditions:1},
+  {id:"PTW-2026-4431", scope:"Excavation \u2014 PL-7 test pit at KP 12.4", type:"Excavation", loc:"PL-7 \u00B7 ROW", window:"09:00\u201317:00", iso:"CPI-311", status:"Active", conditions:3},
+  {id:"PTW-2026-4387", scope:"MCC-2 breaker maintenance", type:"Electrical", loc:"CPF \u00B7 Utilities", window:"Expired 02:00", iso:"CPI-118", status:"Closed", conditions:0}
+];
+
+const INCIDENTS = [
+  {ref:"INC-2026-041", title:"12 L produced-water spill at sample point", loc:"Water Handling", cls:"Minor spill", date:"2026-11-09", inv:"Closed"},
+  {ref:"INC-2026-039", title:"Contractor hand injury during valve change-out", loc:"CS-4", cls:"Recordable", date:"2026-11-04", inv:"Investigation open"},
+  {ref:"INC-2026-036", title:"H\u2082S alarm at 18 ppm, inlet sampler", loc:"CPF Inlet", cls:"Near-miss", date:"2026-10-27", inv:"Root cause complete"},
+  {ref:"INC-2026-031", title:"T-104 level transmitter failure", loc:"Tank Farm", cls:"Equipment", date:"2026-10-18", inv:"Closed"},
+  {ref:"INC-2026-028", title:"Vehicle near-miss on winter access road", loc:"Logistics", cls:"Near-miss", date:"2026-10-09", inv:"Closed"},
+  {ref:"INC-2026-024", title:"3 h unplanned flaring after compressor trip", loc:"CS-4", cls:"Process upset", date:"2026-09-29", inv:"Actions tracked"}
+];
+
+const COMPLIANCE = [
+  {name:"Process safety management programme", fw:"AER / OHS PSM", owner:"J. Whitmore", verified:"2026-10-22", cov:94, findings:1},
+  {name:"Emergency response plan and exercises", fw:"AER Directive 071", owner:"R. Desjardins", verified:"2026-09-30", cov:71, findings:2},
+  {name:"Pipeline integrity management", fw:"CSA Z662", owner:"D. Okonkwo", verified:"2026-11-05", cov:88, findings:0},
+  {name:"Hazardous work and confined space", fw:"Alberta OHS Part 15", owner:"M. Haddad", verified:"2026-10-15", cov:96, findings:0},
+  {name:"Emissions and flaring reporting", fw:"AER Directive 060", owner:"K. Sutherland", verified:"2026-11-01", cov:83, findings:1},
+  {name:"Occupational health and hygiene", fw:"ISO 45001", owner:"S. Bergeron", verified:"2026-08-20", cov:90, findings:0},
+  {name:"Contractor management and competency", fw:"Site standard CM-07", owner:"L. Chen", verified:"2026-09-12", cov:78, findings:0}
+];
+
+const FINDINGS = [
+  {ref:"AF-2026-19", text:"Emergency exercise records lack barrier-level evidence", src:"Internal audit", due:"2026-12-15", status:"In progress"},
+  {ref:"AF-2026-22", text:"Two isolation certificates not reconciled after turnaround", src:"AER inspection", due:"2026-11-28", status:"In progress"},
+  {ref:"AF-2026-25", text:"Firewater pump test frequency below site standard", src:"Internal audit", due:"2027-01-10", status:"Action assigned"},
+  {ref:"AF-2026-27", text:"Contractor orientation records incomplete (3 crews)", src:"Internal audit", due:"2026-12-05", status:"In progress"}
+];
+
+const FEED = [
+  {k:"crit", t:"04:02", txt:"<b>GD-12 gas detector</b> entered fault \u2014 inlet coverage reduced to 64%", meta:"Detection barrier \u00B7 auto-linked to RSK-2026-014"},
+  {k:"hi", t:"03:47", txt:"<b>PTW-2026-4419</b> hot work requested within 4 m of a live produced-water line", meta:"Permit conflict check \u00B7 awaiting authorization"},
+  {k:"ok", t:"01:18", txt:"<b>PSV-311</b> bench test passed \u2014 10.4 barg set pressure verified", meta:"Mitigation barrier restored \u00B7 credit re-applied"},
+  {k:"hi", t:"23:41", txt:"<b>PL-7</b> corrosion rate 0.09 mm/yr, remaining life 5.4 years", meta:"Inspection \u00B7 RSK-2026-033 review advanced"},
+  {k:"info", t:"22:06", txt:"Turnaround isolation package <b>CPI-118</b> reconciled by M. Haddad", meta:"Permit to work \u00B7 2 certificates closed"},
+  {k:"crit", t:"20:33", txt:"<b>P-101</b> firewater pump failed annual flow test at 82% of rated capacity", meta:"Barrier impaired \u00B7 RSK-2026-110 escalated"},
+  {k:"ok", t:"18:12", txt:"Night-shift fatigue survey completed \u2014 41 responses, 3 flags", meta:"Human factors \u00B7 RSK-2026-067 review moved forward"},
+  {k:"info", t:"16:50", txt:"Weekly register review held with operations and maintenance leads", meta:"Governance \u00B7 4 actions assigned"}
+];
+
+/* ---------- helpers ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+const band = s => s >= 15 ? "crit" : s >= 10 ? "hi" : s >= 5 ? "warn" : "ok";
+const bandName = s => s >= 15 ? "Critical" : s >= 10 ? "High" : s >= 5 ? "Medium" : "Low";
+const cellBg = s => s >= 15 ? "#EFD6CF" : s >= 10 ? "#F6E2D0" : s >= 5 ? "#F3ECD4" : "#E1EBE3";
+const cellInk = s => s >= 15 ? "#8E2019" : s >= 10 ? "#B9551E" : s >= 5 ? "#8C6A10" : "#2F6E52";
+const fmtDate = d => new Date(d + "T12:00:00").toLocaleDateString("en-CA", {year:"numeric", month:"short", day:"2-digit"});
+
+const state = {view:"overview", cat:"All", q:"", cell:null};
+
+/* ============================================================
+   Overview
+   ============================================================ */
+function renderKpis(){
+  const open = RISKS.length;
+  const high = RISKS.filter(r => r.score >= 15).length;
+  const overdue = 9;
+  const barrier = Math.round((SCE.filter(s => s.health === "Healthy").length + SCE.filter(s => s.health === "Degraded").length * .5) / SCE.length * 100);
+  const permit = 86;
+  $("#kpi-open").textContent = open;
+  $("#kpi-high").textContent = high;
+  $("#kpi-overdue").textContent = overdue;
+  $("#kpi-barrier").innerHTML = barrier + "<i>%</i>";
+  $("#kpi-permit").innerHTML = permit + "<i>%</i>";
+  $("#kpi-high-bar").style.width = Math.round(high / open * 100) + "%";
+  $("#kpi-overdue-bar").style.width = "56%";
+  $("#kpi-barrier-bar").style.width = barrier + "%";
+  $("#kpi-permit-bar").style.width = permit + "%";
+  $("#nav-risk-count").textContent = open;
+}
+
+function renderTopExposures(){
+  const rows = RISKS.slice().sort((a,b) => b.score - a.score).slice(0,6);
+  $("#top-exposures").innerHTML = rows.map(r => `
+    <tr data-risk="${r.id}" style="cursor:pointer">
+      <td><div class="ttl">${esc(r.title)}<small class="mono">${r.id}</small></div></td>
+      <td>${esc(r.asset)}</td>
+      <td style="color:var(--steel);font-size:11.5px">${esc(r.cat)}</td>
+      <td><span class="score" style="color:${cellInk(r.score)}">${r.score}</span></td>
+      <td style="font-size:11.5px">${esc(r.owner)}</td>
+      <td><span class="pill ${band(r.score)}">${esc(r.status)}</span></td>
+    </tr>`).join("");
+}
+
+function renderMatrix(){
+  const grid = $("#mx-grid");
+  const axis = $("#mx-axis");
+  let html = "";
+  for (let L = 5; L >= 1; L--){
+    for (let C = 1; C <= 5; C++){
+      const s = L * C;
+      const n = RISKS.filter(r => r.L === L && r.C === C).length;
+      const sel = state.cell && state.cell.L === L && state.cell.C === C ? " sel" : "";
+      html += `<button class="mx-cell${n ? "" : " empty"}${sel}" data-l="${L}" data-c="${C}"
+        style="background:${cellBg(s)};color:${cellInk(s)};border:0"
+        title="Likelihood ${L} × Consequence ${C} = ${s}. ${n} risk(s). Click to filter.">
+        <span class="n">${n || "·"}</span><span class="s">${s}</span></button>`;
+    }
+  }
+  grid.innerHTML = html;
+  let ax = `<div></div>`;
+  for (let C = 1; C <= 5; C++) ax += `<div>${C}</div>`;
+  axis.innerHTML = ax;
+  $("#mx-caption").textContent = state.cell
+    ? `${state.cell.n} assessment(s) at L${state.cell.L} × C${state.cell.C} — filtered in the register`
+    : `${RISKS.length} assessments in scope · residual scores after credited controls`;
+  $$(".mx-cell", grid).forEach(b => b.addEventListener("click", () => {
+    const L = +b.dataset.l, C = +b.dataset.c;
+    state.cell = (state.cell && state.cell.L === L && state.cell.C === C) ? null : {L, C, n: RISKS.filter(r => r.L===L && r.C===C).length};
+    state.cat = "All"; state.q = "";
+    renderMatrix(); syncCatChips(); renderRiskRows();
+    if (state.cell && state.cell.n) go("risks");
+  }));
+}
+
+function renderFeed(){
+  $("#feed").innerHTML = FEED.map(f => `
+    <li>
+      <div class="mark ${f.k}"></div>
+      <div>
+        <div class="txt">${f.txt}</div>
+        <div class="meta">${f.meta}</div>
+      </div>
+      <div class="time">${f.t}</div>
+    </li>`).join("");
+}
+
+/* ============================================================
+   Risk register
+   ============================================================ */
+const CATS = ["All","Process Safety","Mechanical Integrity","Permit & Work Control","Environmental","Human Factors","Cyber","Regulatory","Logistics"];
+
+function renderCatChips(){
+  const cats = ["All", ...Array.from(new Set(RISKS.map(r => r.cat))).sort()];
+  $("#cat-chips").innerHTML = cats.map(c => `
+    <button class="chip ${state.cat === c ? "on" : ""}" data-cat="${esc(c)}">${esc(c === "Environment" ? "Environment" : c)}
+      <span class="cnt">${c === "All" ? RISKS.length : RISKS.filter(r => r.cat === c).length}</span></button>`).join("");
+  $$("#cat-chips .chip").forEach(b => b.addEventListener("click", () => {
+    state.cat = b.dataset.cat; state.cell = null;
+    renderCatChips(); renderRiskRows(); renderMatrix();
+  }));
+}
+function syncCatChips(){ renderCatChips(); }
+
+function filteredRisks(){
+  return RISKS.filter(r => {
+    if (state.cat !== "All" && r.cat !== state.cat) return false;
+    if (state.cell && !(r.L === state.cell.L && r.C === state.cell.C)) return false;
+    if (state.q){
+      const q = state.q.toLowerCase();
+      return (r.id + " " + r.title + " " + r.asset + " " + r.owner + " " + r.cat).toLowerCase().includes(q);
+    }
+    return true;
+  });
+}
+
+function renderRiskRows(){
+  const rows = filteredRisks().sort((a,b) => b.score - a.score);
+  const tbody = $("#risk-rows");
+  tbody.innerHTML = rows.map(r => `
+    <tr data-risk="${r.id}">
+      <td class="id">${r.id}</td>
+      <td><div class="ttl" title="${esc(r.title)}">${esc(r.title)}</div></td>
+      <td style="font-size:11.5px;color:var(--steel)">${esc(r.asset)}</td>
+      <td style="font-size:11.5px">${esc(r.cat)}</td>
+      <td class="mono">${r.L}</td>
+      <td class="mono">${r.C}</td>
+      <td><span class="score" style="color:${cellInk(r.score)}">${r.score}</span></td>
+      <td style="font-size:11.5px">${esc(r.owner)}</td>
+      <td><span class="pill ${band(r.score)}">${esc(r.status)}</span></td>
+    </tr>`).join("") || `<tr><td colspan="9" style="padding:26px;text-align:center;color:var(--steel)">No risks match the current filter.</td></tr>`;
+  $("#risk-count").textContent = rows.length;
+  $("#risk-total").textContent = RISKS.length;
+  $$("tr[data-risk]", tbody).forEach(tr => tr.addEventListener("click", () => openRisk(tr.dataset.risk)));
+}
+
+/* ============================================================
+   Charts
+   ============================================================ */
+const CHARTS = {};
+const AXIS = {
+  axisLine:{lineStyle:{color:"#D3D9D4"}},
+  axisTick:{show:false},
+  axisLabel:{color:"#5E6E70", fontSize:10.5, fontFamily:"IBM Plex Mono"}
+};
+function chart(id, opt){
+  const el = $("#"+id);
+  if (!el || !window.echarts || el.clientWidth === 0) return;
+  const inst = CHARTS[id] || echarts.init(el, null, {renderer:"canvas"});
+  CHARTS[id] = inst;
+  inst.setOption(Object.assign({textStyle:{fontFamily:"IBM Plex Sans", color:"#5E6E70", fontSize:11}}, opt), true);
+}
+
+function chartsOverview(){
+  const months = ["Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov"];
+  chart("chart-trend", {
+    grid:{left:34, right:14, top:36, bottom:26},
+    legend:{left:0, top:0, itemWidth:9, itemHeight:9, itemGap:16, textStyle:{fontSize:10.5, color:"#5E6E70"}, icon:"rect"},
+    tooltip:{trigger:"axis", backgroundColor:"#142026", borderWidth:0, textStyle:{color:"#fff", fontSize:11}},
+    xAxis:Object.assign({type:"category", data:months, boundaryGap:true}, AXIS),
+    yAxis:[
+      Object.assign({type:"value", min:0, max:40, splitLine:{lineStyle:{color:"#EDEFEB"}}}, AXIS),
+      Object.assign({type:"value", min:0, max:12, show:false}, AXIS)
+    ],
+    series:[
+      {name:"Near-misses", type:"bar", data:[19,17,21,24,22,26,28,25,27,31,29,33],
+       barWidth:"52%", itemStyle:{color:"#142026"}},
+      {name:"Permit non-conformances", type:"line", yAxisIndex:1, data:[9,11,8,7,10,6,5,7,4,6,3,4],
+       lineStyle:{color:"#D0641C", width:2}, itemStyle:{color:"#D0641C"}, symbol:"circle", symbolSize:4}
+    ]
+  });
+}
+
+/* ============================================================
+   Barriers
+   ============================================================ */
+const HEALTH_COLOR = {Healthy:"#2F6E52", Degraded:"#8C6A10", Failed:"#8E2019"};
+const HEALTH_PILL = {Healthy:"ok", Degraded:"warn", Failed:"crit"};
+
+function renderBowtie(){
+  const threats = [
+    ["TH-01","Pig launcher opened under pressure"],
+    ["TH-02","Trapped H\u2082S in inlet piping"],
+    ["TH-03","Manual valve operated out of sequence"],
+    ["TH-04","Wall loss on corroded flowline"],
+    ["TH-05","Upset during turnaround restart"]
+  ];
+  const prevent = [
+    ["Procedural pigging permit","Permit + JSA","ok"],
+    ["H\u2082S monitors and alarm","Detection loop","warn"],
+    ["XV-204 ESD isolation","Partial stroke tested","ok"],
+    ["Corrosion inspection plan","Risk-based intervals","warn"]
+  ];
+  const mitigate = [
+    ["GD-12 gas detection","In fault, 2 of 6 heads","crit"],
+    ["Deluge and firewater P-101","Flow test failed","crit"],
+    ["Emergency response team","Muster drill current","ok"],
+    ["Shelter-in-place procedure","Reviewed 2026-10","ok"]
+  ];
+  const consequences = [
+    ["CO-01","Personnel H\u2082S exposure"],
+    ["CO-02","Loss of containment and clean-up"],
+    ["CO-03","Production shutdown, 3\u20135 days"],
+    ["CO-04","Regulatory notification and scrutiny"]
+  ];
+  const node = a => `
+    <div class="bt-node">
+      <small>${a[0]}</small>${esc(a[1])}
+    </div>`;
+  const bar = b => `
+    <div class="bt-bar">
+      <span class="st" style="background:${HEALTH_COLOR[{ok:"Healthy",warn:"Degraded",crit:"Failed"}[b[2]]]}"></span>
+      <div><div class="nm">${esc(b[0])}</div><small>${esc(b[1])}</small></div>
+    </div>`;
+  $("#bowtie").innerHTML = `
+    <div class="bt-col"><div class="bt-title">THREATS</div>${threats.map(node).join("")}</div>
+    <div class="bt-mid"><div class="bt-title" style="text-align:center">PREVENTION</div>${prevent.map(bar).join("")}</div>
+    <div class="bt-hazard">
+      <div class="lbl">TOP EVENT</div>
+      <strong>Loss of containment<br>H\u2082S release at inlet separation</strong>
+      <div class="cls">BT-04 · 5 barriers · 2 impaired</div>
+    </div>
+    <div class="bt-mid"><div class="bt-title" style="text-align:center">MITIGATION</div>${mitigate.map(bar).join("")}</div>
+    <div class="bt-col"><div class="bt-title">CONSEQUENCES</div>${consequences.map(node).join("")}</div>`;
+}
+
+function renderSCE(){
+  $("#sce-rows").innerHTML = SCE.map(s => `
+    <tr>
+      <td><div class="ttl">${esc(s.name)}<small class="mono">${s.tag}</small></div></td>
+      <td style="font-size:11.5px;color:var(--steel)">${esc(s.fn)}</td>
+      <td style="font-size:11.5px">${esc(s.test)}</td>
+      <td class="mono" style="font-size:11px">${fmtDate(s.last)}</td>
+      <td><span class="pill ${HEALTH_PILL[s.health]}">${s.health}</span></td>
+    </tr>`).join("");
+  const healthy = SCE.filter(s => s.health === "Healthy").length;
+  const idx = Math.round((healthy * 1 + SCE.filter(s => s.health === "Degraded").length * .5) / SCE.length * 100);
+  $("#bh-index").textContent = idx + "%";
+}
+
+function chartBarrier(){
+  const fn = ["Prevention","Detection","Containment","Emergency response","Mitigation"];
+  const val = [84, 62, 91, 74, 66];
+  chart("chart-barrier", {
+    grid:{left:96, right:34, top:10, bottom:18},
+    tooltip:{trigger:"item", backgroundColor:"#142026", borderWidth:0, textStyle:{color:"#fff", fontSize:11},
+      formatter:p => `${p.name}: ${p.value}%`},
+    xAxis:{type:"value", max:100, show:false},
+    yAxis:Object.assign({type:"category", data:fn, inverse:true}, AXIS),
+    series:[{
+      type:"bar", data:val, barWidth:14,
+      label:{show:true, position:"right", formatter:"{c}%", color:"#5E6E70", fontSize:10.5, fontFamily:"IBM Plex Mono"},
+      itemStyle:{color:p => p.value < 70 ? "#8E2019" : p.value < 80 ? "#D0641C" : "#2F6E52"}
+    }]
+  });
+}
+
+/* ============================================================
+   Permits
+   ============================================================ */
+const PERMIT_PILL = {"Approved":"ok","Active":"info","Awaiting authorization":"warn","Closed":"mut"};
+
+function renderPermits(){
+  $("#p-active").textContent = PERMITS.filter(p => p.status === "Active" || p.status === "Approved").length;
+  $("#p-wait").textContent = PERMITS.filter(p => p.status === "Awaiting authorization").length;
+  $("#p-conf").textContent = "2";
+  $("#p-simo").textContent = "2";
+  $("#permit-rows").innerHTML = PERMITS.map(p => `
+    <tr>
+      <td class="id">${p.id}</td>
+      <td><div class="ttl" title="${esc(p.scope)}">${esc(p.scope)}</div></td>
+      <td style="font-size:11.5px">${esc(p.type)}</td>
+      <td style="font-size:11.5px;color:var(--steel)">${esc(p.loc)}</td>
+      <td class="mono" style="font-size:11px">${esc(p.window)}</td>
+      <td class="mono" style="font-size:11px;color:${p.iso === "CPI-118" ? "var(--crit)" : "var(--steel)"}">${esc(p.iso)}</td>
+      <td><span class="pill ${PERMIT_PILL[p.status]}">${esc(p.status)}</span></td>
+      <td class="act">${p.status === "Awaiting authorization"
+        ? `<button class="btn sm" data-authorize="${p.id}">Authorize</button>`
+        : `<button class="linkish" data-view-permit="${p.id}">Details</button>`}</td>
+    </tr>`).join("");
+  $$("[data-authorize]").forEach(b => b.addEventListener("click", () => {
+    const p = PERMITS.find(x => x.id === b.dataset.authorize);
+    p.status = "Approved"; p.conditions = Math.max(0, p.conditions - 1);
+    renderPermits();
+    toast(`${p.id} authorized — isolation ${p.iso} re-verified`);
+  }));
+  $$("[data-view-permit]").forEach(b => b.addEventListener("click", () => {
+    const p = PERMITS.find(x => x.id === b.dataset.viewPermit);
+    toast(`${p.id}: ${p.conditions} open condition(s), isolation ${p.iso}`);
+  }));
+}
+
+function renderConflicts(){
+  $("#conflicts").innerHTML = `
+    <div class="note" style="border-left:3px solid var(--crit);background:#FBF2F0;margin-bottom:10px">
+      <b>Isolation CPI-118 is bound to two permits.</b> PTW-2026-4412 (lift) and PTW-2026-4423 (confined space) both claim the same lock box.
+      Resolution: re-issue CPI-125 for the tank entry before 08:00.
+    </div>
+    <div class="note" style="border-left:3px solid var(--hi)">
+      <b>Hot work within 4 m of a live line.</b> PTW-2026-4419 intersects the live produced-water segment at Pad 12.
+      Resolution: depressurize and drain the segment, or relocate the weld to the pre-fabricated spool.
+    </div>
+    <div class="note" style="border-left:3px solid var(--info)">
+      <b>Simultaneous operations window 08:00–14:00.</b> Lift, confined-space entry and hot work overlap inside a 300 m radius.
+      SIMO review is required before the first permit is released.
+    </div>`;
+}
+
+function chartPermit(){
+  const types = ["Hot Work","Confined Space","Lift","Excavation"];
+  const open = [4,5,2,3];
+  const closed = [3,2,3,2];
+  chart("chart-permit", {
+    grid:{left:104, right:16, top:26, bottom:22},
+    legend:{right:0, top:0, itemWidth:9, itemHeight:9, textStyle:{fontSize:10.5, color:"#5E6E70"}, icon:"rect"},
+    tooltip:{trigger:"axis", backgroundColor:"#142026", borderWidth:0, textStyle:{color:"#fff", fontSize:11}},
+    xAxis:Object.assign({type:"value", splitLine:{lineStyle:{color:"#EDEFEB"}}}, AXIS),
+    yAxis:Object.assign({type:"category", data:types, inverse:true}, AXIS),
+    series:[
+      {name:"Open conditions", type:"bar", stack:"c", data:open, barWidth:12, itemStyle:{color:"#D0641C"}},
+      {name:"Closed", type:"bar", stack:"c", data:closed, barWidth:12, itemStyle:{color:"#142026"}}
+    ]
+  });
+}
+
+/* ============================================================
+   Asset integrity
+   ============================================================ */
+function renderAssets(){
+  $("#asset-rows").innerHTML = ASSETS.map(a => {
+    const lifePill = a.status === "crit" ? "crit" : a.status === "warn" ? "warn" : "ok";
+    const overdue = a.status === "crit";
+    return `<tr>
+      <td class="id">${a.tag}</td>
+      <td><div class="ttl">${esc(a.desc)}</div></td>
+      <td style="font-size:11.5px;color:var(--steel)">${esc(a.service)}</td>
+      <td class="mono">${a.tmin.toFixed(1)}</td>
+      <td class="mono">${a.t.toFixed(2)}</td>
+      <td class="mono">${a.rate.toFixed(2)} <span style="color:var(--steel2);font-size:10px">mm/yr</span></td>
+      <td><span class="pill ${lifePill}">${a.life.toFixed(1)} yr</span></td>
+      <td class="mono" style="font-size:11px;color:${overdue ? "var(--crit)" : "var(--steel)"}">${fmtDate(a.next)}${overdue ? " · overdue" : ""}</td>
+    </tr>`;
+  }).join("");
+
+  $("#inspection-list").innerHTML = [
+    {tag:"HDR-3", txt:"Produced water header below retirement thickness margin", due:"Overdue 15 days", k:"crit"},
+    {tag:"T-104", txt:"Internal inspection due before winter shut-in", due:"Due 02 Dec 2026", k:"warn"},
+    {tag:"P-101", txt:"Firewater pump performance retest after failure", due:"Due 16 Nov 2026", k:"warn"},
+    {tag:"PL-7", txt:"Test pit excavation at KP 12.4 to confirm CUI", due:"Scheduled 20 Nov", k:"info"},
+    {tag:"E-201", txt:"Glycol reboiler tube bundle inspection in next window", due:"Due 19 Feb 2027", k:"ok"}
+  ].map(i => `
+    <div class="asset-tile">
+      <div class="row1"><span class="mono" style="font-size:11px;color:var(--steel)">${i.tag}</span>
+        <span class="pill ${i.k}">${i.due}</span></div>
+      <div style="font-size:12.5px">${esc(i.txt)}</div>
+    </div>`).join("");
+}
+
+function chartIntegrity(){
+  chart("chart-integrity", {
+    grid:{left:36, right:16, top:30, bottom:34},
+    legend:{right:0, top:0, itemWidth:9, itemHeight:9, textStyle:{fontSize:10.5, color:"#5E6E70"}, icon:"rect"},
+    tooltip:{trigger:"axis", backgroundColor:"#142026", borderWidth:0, textStyle:{color:"#fff", fontSize:11},
+      valueFormatter:v => v + " mm"},
+    xAxis:Object.assign({type:"category", data:ASSETS.map(a => a.tag)}, AXIS),
+    yAxis:Object.assign({type:"value", name:"mm", nameTextStyle:{color:"#84928F", fontSize:10},
+      splitLine:{lineStyle:{color:"#EDEFEB"}}}, AXIS),
+    series:[
+      {name:"Minimum allowable", type:"bar", barWidth:"34%", itemStyle:{color:"#C8D0C9"},
+       data:ASSETS.map(a => a.tmin)},
+      {name:"Measured", type:"bar", barWidth:"34%", itemStyle:{color:"#2F6E52"},
+       data:ASSETS.map(a => ({value:+a.t.toFixed(2),
+         itemStyle:{color:a.status === "crit" ? "#8E1919" : a.status === "warn" ? "#D0641C" : "#2F6E52"}}))}
+    ]
+  });
+}
+
+/* ============================================================
+   Incidents
+   ============================================================ */
+const INV_PILL = {"Closed":"mut","Investigation open":"hi","Root cause complete":"ok","Actions tracked":"warn"};
+
+function renderIncidents(){
+  $("#i-month").textContent = "3";
+  $("#i-open").textContent = "2";
+  $("#i-days").textContent = "10";
+  $("#i-repeat").textContent = "2";
+  $("#inv-list").innerHTML = `
+    <div class="asset-tile">
+      <div class="row1"><span class="mono" style="font-size:11px;color:var(--steel)">INC-2026-039</span>
+        <span class="pill hi">14 days open</span></div>
+      <div style="font-size:12.5px">Contractor hand injury during valve change-out at CS-4</div>
+      <div class="caption">Lead: S. Bergeron · causal tree in review · interim control: task risk assessment updated</div>
+    </div>
+    <div class="asset-tile">
+      <div class="row1"><span class="mono" style="font-size:11px;color:var(--steel)">INC-2026-024</span>
+        <span class="pill warn">Actions tracked</span></div>
+      <div style="font-size:12.5px">3 h unplanned flaring after compressor trip</div>
+      <div class="caption">Lead: A. Nakamura · 2 of 4 actions closed · flare pilot reliability action open</div>
+    </div>
+    <div class="asset-tile">
+      <div class="row1"><span class="mono" style="font-size:11px;color:var(--steel)">INC-2026-036</span>
+        <span class="pill ok">Root cause complete</span></div>
+      <div style="font-size:12.5px">H₂S alarm at 18 ppm, inlet sampler</div>
+      <div class="caption">Cause: sampling point purge procedure · linked to RSK-2026-014 barrier review</div>
+    </div>`;
+  $("#incident-rows").innerHTML = INCIDENTS.map(i => `
+    <tr>
+      <td class="id">${i.ref}</td>
+      <td><div class="ttl" title="${esc(i.title)}">${esc(i.title)}</div></td>
+      <td style="font-size:11.5px;color:var(--steel)">${esc(i.loc)}</td>
+      <td style="font-size:11.5px">${esc(i.cls)}</td>
+      <td class="mono" style="font-size:11px">${fmtDate(i.date)}</td>
+      <td><span class="pill ${INV_PILL[i.inv] || "mut"}">${esc(i.inv)}</span></td>
+    </tr>`).join("");
+}
+
+function chartIncident(){
+  const cats = ["Near-miss","First aid","Recordable","Lost time"];
+  const vals = [26, 7, 2, 0];
+  chart("chart-incident", {
+    grid:{left:86, right:36, top:12, bottom:24},
+    tooltip:{trigger:"item", backgroundColor:"#142026", borderWidth:0, textStyle:{color:"#fff", fontSize:11}},
+    xAxis:{type:"value", max:30, show:false},
+    yAxis:Object.assign({type:"category", data:cats, inverse:true}, AXIS),
+    series:[{type:"bar", data:vals, barWidth:22,
+      label:{show:true, position:"right", color:"#5E6E70", fontSize:10.5, fontFamily:"IBM Plex Mono"},
+      itemStyle:{color:p => ["#142026","#5E6E70","#D0641C","#8E2019"][p.dataIndex]}}]
+  });
+}
+
+/* ============================================================
+   Compliance
+   ============================================================ */
+function renderCompliance(){
+  $("#compliance-rows").innerHTML = COMPLIANCE.map(c => {
+    const tone = c.cov >= 90 ? "#2F6E52" : c.cov >= 80 ? "#8C6A10" : "#8E2019";
+    return `<tr>
+      <td><div class="ttl">${esc(c.name)}</div></td>
+      <td style="font-size:11.5px;color:var(--steel)">${esc(c.fw)}</td>
+      <td style="font-size:11.5px">${esc(c.owner)}</td>
+      <td class="mono" style="font-size:11px">${fmtDate(c.verified)}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="flex:1;height:6px;background:#EDEFEB;position:relative">
+            <i style="position:absolute;inset:0 auto 0 0;width:${c.cov}%;background:${tone};display:block"></i>
+          </div>
+          <span class="mono" style="font-size:11px;color:${tone}">${c.cov}%</span>
+        </div>
+      </td>
+      <td>${c.findings ? `<span class="pill warn">${c.findings} open</span>` : `<span class="pill ok">Clear</span>`}</td>
+    </tr>`;
+  }).join("");
+
+  $("#finding-rows").innerHTML = FINDINGS.map(f => `
+    <tr>
+      <td class="id">${f.ref}</td>
+      <td><div class="ttl">${esc(f.text)}</div></td>
+      <td style="font-size:11.5px;color:var(--steel)">${esc(f.src)}</td>
+      <td class="mono" style="font-size:11px">${fmtDate(f.due)}</td>
+      <td><span class="pill ${f.status === "In progress" ? "warn" : "info"}">${esc(f.status)}</span></td>
+    </tr>`).join("");
+}
+
+/* ============================================================
+   Copilot
+   ============================================================ */
+function renderCopilot(){
+  $("#prompt-list").innerHTML = [
+    "Which exposures moved this week and why?",
+    "Summarize the barrier gap on BT-04.",
+    "What inspection work is overdue?",
+    "Draft the AER notification for the P-101 failure.",
+    "Where does our emergency response evidence fall short?"
+  ].map(q => `<button class="prompt-chip" data-prompt="${esc(q)}">${esc(q)}</button>`).join("");
+  $$("#prompt-list .prompt-chip").forEach(b => b.addEventListener("click", () => {
+    $("#chat-input").value = b.dataset.prompt; sendChat();
+  }));
+
+  $("#signals").innerHTML = `
+    <div class="note" style="border-left:3px solid var(--crit);margin-bottom:9px">
+      <b>Barrier credit mismatch.</b> RSK-2026-014 still credits GD-12 detection, but the loop is in fault. Suggested residual: <span class="mono">20 → 25</span>.
+    </div>
+    <div class="note" style="border-left:3px solid var(--hi);margin-bottom:9px">
+      <b>Repeat cause cluster.</b> 3 of 6 events in 90 days trace to isolation reconciliation — mirrors finding AF-2026-22.
+    </div>
+    <div class="note">
+      <b>Inspection load.</b> HDR-3 and T-104 fall inside the same 2-week window; sequencing both risks a SIMO conflict.
+    </div>
+    <div class="caption" style="margin-top:10px">Signals are generated from the demo dataset. No live model inference runs in this file.</div>`;
+}
+
+/* ============================================================
+   Navigation & lazy charts
+   ============================================================ */
+function ensureCharts(v){
+  setTimeout(() => {
+    if (v === "overview") chartsOverview();
+    if (v === "barriers") chartBarrier();
+    if (v === "permits") chartPermit();
+    if (v === "integrity") chartIntegrity();
+    if (v === "incidents") chartIncident();
+    Object.values(CHARTS).forEach(c => c.resize());
+  }, 60);
+}
+function go(v){
+  state.view = v;
+  $$(".view").forEach(s => s.classList.toggle("on", s.id === "v-" + v));
+  $$(".nav-item").forEach(b => b.classList.toggle("on", b.dataset.view === v));
+  ensureCharts(v);
+  window.scrollTo({top:0, behavior:"instant" in window ? "instant" : "auto"});
+}
+$$(".nav-item").forEach(b => b.addEventListener("click", () => go(b.dataset.view)));
+$$("[data-goto]").forEach(b => b.addEventListener("click", () => go(b.dataset.goto)));
+window.addEventListener("resize", () => Object.values(CHARTS).forEach(c => c.resize()));
+
+/* ============================================================
+   Risk detail drawer
+   ============================================================ */
+function openRisk(id){
+  const r = RISKS.find(x => x.id === id);
+  if (!r) return;
+  const controlNames = [
+    ["Independent overpressure protection", 92],
+    ["Operating procedure and JSA", 74],
+    ["Inspection / testing programme", 61],
+    ["Operator competency and drills", 84],
+    ["Isolation and lock-out standard", 47]
+  ].slice(0, Math.max(2, Math.min(5, r.controls)));
+  const ctrlColor = v => v >= 80 ? "#2F6E52" : v >= 60 ? "#8C6A10" : "#8E2019";
+
+  $("#drawer").innerHTML = `
+    <div class="drawer-hd" style="position:relative">
+      <div class="id"><span>${r.id}</span><span style="color:var(--line)">|</span>
+        <span class="pill ${band(r.score)}" style="font-size:10.5px">${bandName(r.score)}</span></div>
+      <h3>${esc(r.title)}</h3>
+      <button class="icon-btn x" id="drawer-x" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="drawer-bd">
+      <div class="score-badge">
+        <div class="score-num" style="color:${cellInk(r.score)}">${r.score}</div>
+        <div class="cap"><b>Residual score.</b> Likelihood ${r.L} × Consequence ${r.C} on a 5×5 matrix.<br>
+          Inherent score was ${Math.min(25, r.score + 5)} before credited controls.</div>
+      </div>
+
+      <div class="block-h">Register entry</div>
+      <div class="kv">
+        <div class="k">Asset</div><div>${esc(r.asset)}</div>
+        <div class="k">Category</div><div>${esc(r.cat)}</div>
+        <div class="k">Owner</div><div>${esc(r.owner)}</div>
+        <div class="k">Status</div><div><span class="pill ${band(r.score)}">${esc(r.status)}</span></div>
+        <div class="k">Next review</div><div class="mono">${fmtDate(r.review)}</div>
+        <div class="k">Linked bow-tie</div><div>BT-04 · inlet containment <span class="pill crit" style="margin-left:6px">2 impaired</span></div>
+      </div>
+
+      <div class="block-h">Credited controls</div>
+      ${controlNames.map(c => `
+        <div class="ctrl-row">
+          <div class="nm">${esc(c[0])}</div>
+          <div class="bar"><i style="width:${c[1]}%;background:${ctrlColor(c[1])}"></i></div>
+          <div class="mono" style="font-size:11px;text-align:right;color:${ctrlColor(c[1])}">${c[1]}%</div>
+        </div>`).join("")}
+
+      <div class="block-h">Open actions</div>
+      <div class="note" style="margin-bottom:8px">Replace GD-12 detector head and re-run bump test — due 18 Nov, assigned to A. Nakamura.</div>
+      <div class="note">Update JSA to reflect revised isolation boundary — due 22 Nov, assigned to M. Haddad.</div>
+
+      <div class="block-h">Why this matters</div>
+      <p class="caption" style="margin:0">A release at the inlet separator would expose the field crew to H\u2082S
+        and could force a 3–5 day production shutdown. Two of the credited mitigation barriers are currently impaired,
+        so the exposure is carried at full consequence.</p>
+    </div>
+    <div class="drawer-ft">
+      <button class="btn" id="drawer-close">Close</button>
+      <button class="btn primary" data-escalate="${r.id}">Escalate to leadership</button>
+    </div>`;
+  $("#drawer").classList.add("on");
+  $("#drawer").setAttribute("aria-hidden", "false");
+  $("#scrim").classList.add("on");
+  $("#drawer-x").onclick = closeDrawer;
+  $("#drawer-close").onclick = closeDrawer;
+  $("[data-escalate]").onclick = () => {
+    toast(`${r.id} escalated — review scheduled with the site leadership team`);
+    closeDrawer();
+  };
+}
+function closeDrawer(){
+  $("#drawer").classList.remove("on");
+  $("#drawer").setAttribute("aria-hidden", "true");
+  $("#scrim").classList.remove("on");
+}
+$("#scrim").addEventListener("click", closeDrawer);
+document.addEventListener("keydown", e => { if (e.key === "Escape"){ closeDrawer(); closeModal(); } });
+
+/* ============================================================
+   New risk modal
+   ============================================================ */
+function openNewRisk(){
+  const cats = Array.from(new Set(RISKS.map(r => r.cat)).concat(["Environment"]));
+  $("#modal").innerHTML = `
+    <div class="modal-hd">
+      <h3>Raise a new risk</h3>
+      <div style="margin-left:auto"><button class="icon-btn" id="modal-x" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    </div>
+    <div class="modal-bd">
+      <div class="field"><label for="nr-title">Risk event</label>
+        <input id="nr-title" placeholder="e.g. Overpressure during start-up of V-101" value=""></div>
+      <div class="f2">
+        <div class="field"><label for="nr-asset">Asset / area</label>
+          <input id="nr-asset" placeholder="CPF · Utilities" value="CPF · Utilities"></div>
+        <div class="field"><label for="nr-cat">Category</label>
+          <select id="nr-cat">${cats.map(c => `<option>${c}</option>`).join("")}</select></div>
+      </div>
+      <div class="f2">
+        <div class="field"><label for="nr-L">Likelihood (1–5)</label>
+          <select id="nr-L">${[1,2,3,4,5].map(n => `<option${n === 3 ? " selected" : ""}>${n}</option>`).join("")}</select></div>
+        <div class="field"><label for="nr-C">Consequence (1–5)</label>
+          <select id="nr-C">${[1,2,3,4,5].map(n => `<option${n === 3 ? " selected" : ""}>${n}</option>`).join("")}</select></div>
+      </div>
+      <div class="field"><label for="nr-owner">Owner</label>
+        <input id="nr-owner" value="R. Desjardins"></div>
+      <div class="score-preview">
+        <div class="v" id="nr-score">9</div>
+        <div class="t" id="nr-band">Medium · residual score updates the matrix and KPIs on save.</div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn" id="nr-cancel">Cancel</button>
+      <button class="btn primary" id="nr-save">Save to register</button>
+    </div>`;
+  $("#modal").classList.add("on");
+  $("#modal").setAttribute("aria-hidden", "false");
+  $("#scrim").classList.add("on");
+  const upd = () => {
+    const s = +$("#nr-L").value * +$("#nr-C").value;
+    $("#nr-score").textContent = s;
+    $("#nr-score").style.color = cellInk(s);
+    $("#nr-band").innerHTML = `<b>${bandName(s)}</b> · residual score updates the matrix and KPIs on save.`;
+  };
+  $("#nr-L").onchange = upd; $("#nr-C").onchange = upd; upd();
+  $("#modal-x").onclick = closeModal; $("#nr-cancel").onclick = closeModal;
+  $("#nr-save").onclick = () => {
+    const title = ($("#nr-title").value || "").trim() || "Unlabelled risk event";
+    const L = +$("#nr-L").value, C = +$("#nr-C").value;
+    const n = RISKS.length + 1;
+    RISKS.push({
+      id:`RSK-2026-${120 + n}`, title, asset:$("#nr-asset").value || "Unassigned",
+      cat:$("#nr-cat").value, L, C, score:L * C, owner:$("#nr-owner").value || "Unassigned",
+      status:"Action assigned", controls:1, review:"2026-12-15"
+    });
+    closeModal();
+    renderKpis(); renderTopExposures(); renderMatrix(); renderCatChips(); renderRiskRows();
+    toast("Risk added to the register — matrix and KPIs recalculated");
+  };
+}
+function closeModal(){
+  $("#modal").classList.remove("on");
+  $("#modal").setAttribute("aria-hidden", "true");
+  $("#scrim").classList.remove("on");
+}
+
+/* ============================================================
+   Toast, clock, actions
+   ============================================================ */
+let toastTimer = null;
+function toast(msg){
+  $("#toast-txt").textContent = msg;
+  $("#toast").classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $("#toast").classList.remove("on"), 3200);
+}
+function tickClock(){
+  const t = new Date().toLocaleTimeString("en-CA", {timeZone:"America/Edmonton", hour12:false});
+  $("#clock").textContent = t + " MST";
+}
+setInterval(tickClock, 1000); tickClock();
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]");
+  if (!b) return;
+  const act = b.dataset.act;
+  if (act === "new-risk") openNewRisk();
+  else if (act === "export") toast("Export queued — a PDF board pack would be generated here");
+  else if (act === "new-permit") toast("Permit wizard would open here — demo build is read-only for new permits");
+  else if (act === "report-event") toast("Event intake form would open here — demo build is read-only for new events");
+});
+$("#risk-search").addEventListener("input", e => {
+  state.q = e.target.value; renderRiskRows();
+});
+
+/* ============================================================
+   Copilot conversation
+   ============================================================ */
+const CHAT = [];
+function pushMsg(role, html){
+  CHAT.push({role, html});
+  const bd = $("#chat-bd");
+  bd.insertAdjacentHTML("beforeend", role === "user"
+    ? `<div class="msg user">${esc(html)}</div>`
+    : `<div class="msg bot"><div class="who">HUALU COPILOT · grounded on register</div><div class="bubble">${html}</div></div>`);
+  bd.scrollTop = bd.scrollHeight;
+}
+function botAnswer(q){
+  const lq = q.toLowerCase();
+  if (lq.includes("barrier") || lq.includes("bt-04") || lq.includes("bow")){
+    return `BT-04 carries a residual score of 20 with five prevention and mitigation barriers. Two are impaired:
+      <ul>
+        <li><b>GD-12</b> gas detection is in fault (2 of 6 heads), so detection credit is withdrawn.</li>
+        <li><b>P-101</b> firewater pump failed its annual flow test at 82% of rated capacity.</li>
+      </ul>
+      With both credits removed I would re-score <b>RSK-2026-014</b> from 20 to 25 and re-open the management review.
+      Reference: SCE register, BT-04.`;
+  }
+  if (lq.includes("inspection") || lq.includes("overdue") || lq.includes("corrosion")){
+    return `Three items need attention:
+      <ul>
+        <li><b>HDR-3</b> — measured 6.55 mm against a 6.40 mm minimum; remaining life 1.2 yr, inspection 15 days overdue.</li>
+        <li><b>T-104</b> — internal inspection due 02 Dec, inside the winter shut-in window.</li>
+        <li><b>PL-7</b> — corrosion under insulation on the 6-inch flowline; test pit scheduled 20 Nov.</li>
+      </ul>
+      Sequencing HDR-3 and T-104 in the same two-week window creates a simultaneous-operations conflict.`;
+  }
+  if (lq.includes("aer") || lq.includes("notif") || lq.includes("report") || lq.includes("draft")){
+    return `Draft notification (demo wording, not a filing):
+      <ul>
+        <li><b>Event:</b> firewater pump P-101 failed annual performance test at 82% of rated flow.</li>
+        <li><b>Immediate action:</b> pump removed from service, impairment recorded, compensatory patrols in place.</li>
+        <li><b>Interim control:</b> diesel-driven backup pump with weekly start test; deluge coverage reassessed.</li>
+        <li><b>Follow-up:</b> root-cause investigation opened, corrective action due 16 Nov.</li>
+      </ul>
+      Before submission a qualified site lead should validate scope, thresholds and notification timelines.`;
+  }
+  if (lq.includes("compliance") || lq.includes("evidence") || lq.includes("audit") || lq.includes("finding")){
+    return `Evidence coverage averages 86% across seven obligations. The weakness sits in two places:
+      <ul>
+        <li><b>Emergency response</b> — 71% coverage, driven by missing barrier-level exercise records (AF-2026-19).</li>
+        <li><b>Contractor management</b> — 78% coverage, three crews with incomplete orientation records (AF-2026-27).</li>
+      </ul>
+      Closing AF-2026-19 alone lifts the site average to roughly 90%.`;
+  }
+  if (lq.includes("week") || lq.includes("move") || lq.includes("changed") || lq.includes("top")){
+    return `Four exposures moved this week:
+      <ul>
+        <li><b>RSK-2026-110</b> (firewater pump) escalated after the flow test failure — still 15, but now marked impaired.</li>
+        <li><b>RSK-2026-014</b> unchanged at 20, although its detection credit is effectively gone.</li>
+        <li><b>RSK-2026-041</b> (hot work near live line) held at 12 pending the permit conflict decision.</li>
+        <li><b>RSK-2026-067</b> (night-shift fatigue) moved forward for review after the survey flags.</li>
+      </ul>
+      Five risks remain at critical band (15+); the register total is ${RISKS.length}.`;
+  }
+  if (lq.includes("permit") || lq.includes("isolation") || lq.includes("pitw") || lq.includes("ptw")){
+    return `Two permits are waiting and two controls conflict:
+      <ul>
+        <li><b>PTW-2026-4419</b> hot work sits within 4 m of a live produced-water line.</li>
+        <li><b>PTW-2026-4423</b> confined-space entry competes for isolation CPI-118 with PTW-2026-4412.</li>
+      </ul>
+      Recommendation: re-issue CPI-125 for the tank entry, and either drain the line or relocate the weld to the pre-fabricated spool.`;
+  }
+  return `I can answer from the register, barrier, inspection, permit and compliance records. Try asking about
+    <b>top exposures</b>, <b>BT-04 barrier gaps</b>, <b>overdue inspections</b>, <b>permit conflicts</b> or
+    <b>emergency response evidence</b>. Every answer cites the underlying register IDs.`;
+}
+function sendChat(){
+  const inp = $("#chat-input");
+  const q = inp.value.trim();
+  if (!q) return;
+  pushMsg("user", q);
+  inp.value = "";
+  setTimeout(() => pushMsg("bot", botAnswer(q)), 520);
+}
+$("#chat-send").addEventListener("click", sendChat);
+$("#chat-input").addEventListener("keydown", e => { if (e.key === "Enter") sendChat(); });
+
+
+/* ============================================================
+   Access gate — demo credentials
+   ============================================================ */
+const DEMO_AUTH = {user:"Hualuriskmanagment", pass:"1234567890"};
+const SKEY = "hlr_demo_auth";
+const store = {
+  get(){ try { return sessionStorage.getItem(SKEY); } catch(e){ return null; } },
+  set(v){ try { sessionStorage.setItem(SKEY, v); } catch(e){} },
+  clear(){ try { sessionStorage.removeItem(SKEY); } catch(e){} }
+};
+function setAuth(on){
+  document.body.classList.toggle("authed", on);
+  if (on){
+    setTimeout(() => {
+      ensureCharts(state.view);
+      Object.values(CHARTS).forEach(c => c.resize());
+    }, 80);
+  }
+}
+if (store.get() === "1") setAuth(true);
+$("#login-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const u = $("#lg-user").value.trim();
+  const pw = $("#lg-pass").value;
+  if (u === DEMO_AUTH.user && pw === DEMO_AUTH.pass){
+    $("#login-err").textContent = "";
+    store.set("1");
+    setAuth(true);
+    $("#lg-user").classList.remove("login-bad");
+    $("#lg-pass").classList.remove("login-bad");
+    toast("Signed in · synthetic demonstration data only");
+  } else {
+    $("#login-err").textContent = "Username or password is incorrect. Please check your demonstration credentials.";
+    $("#lg-user").classList.add("login-bad");
+    $("#lg-pass").classList.add("login-bad");
+  }
+});
+["#lg-user","#lg-pass"].forEach(sel => $(sel).addEventListener("input", () => {
+  $("#login-err").textContent = "";
+  $("#lg-user").classList.remove("login-bad");
+  $("#lg-pass").classList.remove("login-bad");
+}));
+$("#signout").addEventListener("click", () => {
+  store.clear();
+  $("#lg-user").value = "";
+  $("#lg-pass").value = "";
+  $("#login-err").textContent = "";
+  setAuth(false);
+  $("#lg-user").focus();
+});
+
+/* ============================================================
+   Boot
+   ============================================================ */
+renderKpis();
+renderTopExposures();
+renderMatrix();
+renderFeed();
+renderCatChips();
+renderRiskRows();
+renderBowtie();
+renderSCE();
+renderPermits();
+renderConflicts();
+renderAssets();
+renderIncidents();
+renderCompliance();
+renderCopilot();
+ensureCharts("overview");
+
+pushMsg("bot", `Good morning. I have the Athabasca SAGD register loaded: <b>${RISKS.length} active risks</b>,
+  <b>${RISKS.filter(r => r.score >= 15).length} in the critical band</b>, and <b>2 impaired barriers</b> on bow-tie BT-04.
+  Ask me anything about exposures, barriers, permits or compliance evidence.`);
+pushMsg("user", "Which exposures moved this week?");
+pushMsg("bot", botAnswer("Which exposures moved this week?"));
+
+</script>
+</body>
+</html>
