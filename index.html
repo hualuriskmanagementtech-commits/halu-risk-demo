@@ -93,6 +93,10 @@ a{color:inherit}
   display:grid;place-items:center;color:var(--steel)}
 .icon-btn:hover{border-color:#B9C2BC;color:var(--ink)}
 .icon-btn svg{width:15px;height:15px}
+.exit-btn{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 11px;border:1px solid #C9C2B7;background:#fff;border-radius:var(--r);color:var(--ink);font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.16em;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.exit-btn:hover{border-color:var(--accent);color:var(--accent)}
+.exit-btn:active{background:#FBF1E9}
+.exit-btn svg{width:14px;height:14px}
 .tb-clock{font-family:var(--mono);font-size:11.5px;color:var(--steel);border-left:1px solid var(--line);padding-left:12px}
 .tb-user{display:flex;align-items:center;gap:9px;border-left:1px solid var(--line);padding-left:12px}
 .avatar{width:29px;height:29px;background:var(--ink2);color:#fff;display:grid;place-items:center;
@@ -614,8 +618,9 @@ body.authed #login{display:none}
         <button class="icon-btn" title="Notifications">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 9a6 6 0 0112 0v4l2 3H4l2-3z"/><path d="M10 19a2 2 0 004 0"/></svg>
         </button>
-        <button class="icon-btn" id="signout" title="Sign out of the demo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M15 4h4v16h-4"/><path d="M11 8l-4 4 4 4M7 12h9"/></svg>
+        <button class="exit-btn" id="signout" title="Exit the demonstration and return to the sign-in screen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 4h5v16h-5"/><path d="M10 8l-4 4 4 4M6 12h9"/></svg>
+          <span>EXIT</span>
         </button>
         <div class="tb-user">
           <div class="avatar">RD</div>
@@ -2147,6 +2152,7 @@ $("#login-form").addEventListener("submit", e => {
 }));
 $("#signout").addEventListener("click", () => {
   store.clear();
+  try { $("#lg-pass").blur(); } catch(e) {}
   $("#lg-user").value = "";
   $("#lg-pass").value = "";
   $("#login-err").textContent = "";
