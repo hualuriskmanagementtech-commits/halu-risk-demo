@@ -248,6 +248,7 @@ table.tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12.5p
   border-left:1px solid var(--line);display:flex;flex-direction:column;
   transform:translateX(102%);transition:transform .22s ease}
 .drawer.on{transform:none}
+.drawer.wide{width:min(880px,96vw)}
 .drawer-hd{padding:15px 18px 13px;border-bottom:1px solid var(--line);background:#F7F8F5}
 .drawer-hd .id{font-family:var(--mono);font-size:11px;color:var(--steel);display:flex;gap:8px;align-items:center}
 .drawer-hd h3{font-size:16px;margin-top:6px;line-height:1.3;padding-right:30px}
@@ -266,6 +267,28 @@ table.tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12.5p
 .score-num{font-family:var(--mono);font-size:30px;font-weight:600;line-height:1;min-width:52px}
 .score-badge .cap{font-size:11.5px;color:var(--steel);line-height:1.45}
 
+/* ---------- platform brief blocks ---------- */
+.three-col{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.three-col>div{padding:15px 16px 17px;border-right:1px solid var(--line2)}
+.three-col>div:last-child{border-right:0}
+.three-col .nm{font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.three-col .ds{font-size:12px;line-height:1.62;color:var(--steel);margin:0}
+.layer-row{display:grid;grid-template-columns:40px 186px minmax(0,1fr);align-items:baseline;gap:14px;
+  padding:12px 16px;border-top:1px solid var(--line2)}
+.layer-row .no{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:600}
+.layer-row .nm{font-size:12.5px;font-weight:600;color:var(--ink)}
+.layer-row .ds{font-size:12px;color:var(--steel);line-height:1.6}
+.layer-row.last{border-bottom:0}
+.qline{padding:10px 0;border-bottom:1px solid var(--line2)}
+.qline.first{margin-top:10px;border-top:1px solid var(--line2)}
+.qline .q{font-size:12.3px;font-weight:600;color:var(--ink)}
+.qline .a{font-size:11.8px;color:var(--steel);margin-top:2px}
+.qline.last{border-bottom:0}
+.methods-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.mgroup{padding:13px 16px;border-top:1px solid var(--line2);border-right:1px solid var(--line2)}
+.mgroup:nth-child(3n){border-right:0}
+.mgroup .t{font-size:11.5px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.mgroup .l{font-size:11.5px;line-height:1.62;color:var(--steel)}
 /* ---------- modal ---------- */
 .modal{position:fixed;z-index:80;top:50%;left:50%;transform:translate(-50%,-48%) scale(.98);
   width:min(560px,94vw);background:#fff;border:1px solid var(--line);border-radius:3px;
@@ -416,6 +439,12 @@ body.authed #login{display:none}
   .kpi:nth-child(3){border-right:0}
 }
 @media (max-width:980px){
+  .three-col{grid-template-columns:minmax(0,1fr)}
+  .three-col>div{border-right:0;border-top:1px solid var(--line2)}
+  .three-col>div:first-child{border-top:0}
+  .methods-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mgroup:nth-child(3n){border-right:1px solid var(--line2)}
+  .mgroup:nth-child(2n){border-right:0}
   .login{grid-template-columns:minmax(0,1fr)}
   .login-left{padding:30px 24px 26px}
   .login-left h1{font-size:27px}
@@ -437,6 +466,11 @@ body.authed #login{display:none}
   .bt-mid:before,.bt-mid:after{display:none}
 }
 @media (max-width:760px){
+  .methods-grid{grid-template-columns:minmax(0,1fr)}
+  .mgroup{border-right:0}
+  .layer-row{grid-template-columns:30px minmax(0,1fr);row-gap:2px}
+  .layer-row .ds{grid-column:2}
+  .layer-row .nm{grid-column:2}
   .stages{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stage{border-right:1px solid var(--line2)}
   .stage:nth-child(2n){border-right:0}
@@ -555,6 +589,10 @@ body.authed #login{display:none}
       <button class="nav-item" data-view="risks">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="20" cy="18" r="2"/></svg>
         Risk Register <span class="badge" id="nav-risk-count">16</span>
+      </button>
+      <button class="nav-item" data-view="studies">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 12h6M9 16h4"/></svg>
+        Risk Studies <span class="badge" id="nav-study-count">22</span>
       </button>
       <button class="nav-item" data-view="barriers">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l8 4v6c0 4-3.4 7-8 8-8-4-8-8V7z"/><path d="M8 11h8M8 15h5"/></svg>
@@ -802,6 +840,44 @@ body.authed #login{display:none}
       </section>
 
       <!-- ================= VIEW: BARRIERS ================= -->
+      <!-- ================= VIEW: RISK STUDIES ================= -->
+      <section class="view" id="v-studies">
+        <div class="page-hd">
+          <div>
+            <h1>Risk Studies</h1>
+            <div class="sub">Method workspaces · HAZOP, LOPA, SIL, BowTie, QRA, FMEA, QMS · Athabasca SAGD</div>
+          </div>
+          <div class="tools">
+            <button class="btn" data-act="export">Export study log</button>
+            <button class="btn primary" data-act="new-study">+ New study</button>
+          </div>
+        </div>
+
+        <div class="kpi-strip" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+          <div class="kpi"><div class="lbl">Studies in scope</div><div class="val" id="st-total">–</div>
+            <div class="delta">Six method families in the library</div><div class="bar"><i style="width:100%"></i></div></div>
+          <div class="kpi"><div class="lbl">Open recommendations</div><div class="val" id="st-recs">–</div>
+            <div class="delta">Closed-loop tracking into the register</div><div class="bar"><i id="st-recs-bar" style="width:0"></i></div></div>
+          <div class="kpi"><div class="lbl">SIL loops verified</div><div class="val" id="st-sil">–<i>/6</i></div>
+            <div class="delta">LOPA → SRS → SIS lifecycle</div><div class="bar"><i id="st-sil-bar" style="width:0"></i></div></div>
+          <div class="kpi"><div class="lbl">Studies past due</div><div class="val" id="st-over">–</div>
+            <div class="delta">Open actions older than 30 days</div><div class="bar"><i id="st-over-bar" style="width:0"></i></div></div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-hd"><h2>Study log</h2>
+            <div class="right"><span class="hint">Click a study to open its worksheet</span></div></div>
+          <div id="study-chips" style="display:flex;gap:6px;flex-wrap:wrap;padding:12px 14px 0"></div>
+          <div class="tbl-wrap" style="margin-top:12px">
+            <table class="tbl">
+              <colgroup><col style="width:12%"><col style="width:14%"><col style="width:23%"><col style="width:15%"><col style="width:14%"><col style="width:9%"><col style="width:13%"></colgroup>
+              <thead><tr><th>Study</th><th>Method</th><th>Scope / node</th><th>Area</th><th>Lead</th><th>Actions</th><th>Status · issued</th></tr></thead>
+              <tbody id="study-rows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <section class="view" id="v-barriers">
         <div class="page-hd">
           <div>
@@ -1085,112 +1161,148 @@ body.authed #login{display:none}
         <div class="page-hd">
           <div>
             <h1>Platform Brief</h1>
-            <div class="sub">Hua Lu Risk Management &amp; Technology Consulting Co. · Calgary, Alberta · energy focus</div>
+            <div class="sub">Hua Lu Risk Management &amp; Technology Consulting Co. · Calgary, Alberta · EST. 2024</div>
           </div>
-          <div class="tools"><span class="pill mut nodot">Demo build 2.6</span></div>
+          <div class="tools"><span class="pill mut nodot">Demo build 2.7</span></div>
         </div>
 
         <div class="panel">
           <div class="panel-bd split-brief">
             <div>
-              <h2 style="font-size:16px;margin-bottom:8px">AI-enabled risk management for the energy industry</h2>
+              <h2 style="font-size:16px;margin-bottom:8px">AI + Data + Risk Management</h2>
               <p class="caption" style="font-size:12.8px;color:var(--steel);margin:0 0 10px">
-                Hua Lu Risk Management &amp; Technology Consulting Co. develops AI-enabled risk management technology
-                that helps organizations identify emerging risks, understand potential impacts and make faster,
-                better-informed decisions.
+                Hua Lu is developing an AI-enabled risk management technology platform designed to help organizations
+                transform complex risk information into actionable management insights.
               </p>
               <p class="caption" style="font-size:12.8px;color:var(--steel);margin:0">
-                The platform combines artificial intelligence, data analytics and enterprise risk management
-                methodology to help energy companies identify, assess, monitor and manage complex risk. Critical
-                risk information that usually sits across spreadsheets, reports, legacy systems and business
-                functions is brought into a single, continuously updated view.
+                The energy industry operates across physical, financial, regulatory, environmental, technological and
+                geopolitical environments. Companies face interconnected risks involving operations, market conditions,
+                commodity prices and financial performance — exposure that is hard to see when it is spread across
+                separate assessments, spreadsheets and business functions.
               </p>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line2);border:1px solid var(--line2)">
-              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Lifecycle stages</div><div class="mono" style="font-size:20px;font-weight:600">6</div></div>
-              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Capability pillars</div><div class="mono" style="font-size:20px;font-weight:600">4</div></div>
-              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Platform modules</div><div class="mono" style="font-size:20px;font-weight:600">7</div></div>
-              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Demo assets</div><div class="mono" style="font-size:20px;font-weight:600">118</div></div>
+              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Core capabilities</div><div class="mono" style="font-size:20px;font-weight:600">3</div><div class="caption" style="font-size:10.5px;margin-top:2px">AI · data · risk management</div></div>
+              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Framework layers</div><div class="mono" style="font-size:20px;font-weight:600">5</div><div class="caption" style="font-size:10.5px;margin-top:2px">Data to decision support</div></div>
+              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Key capabilities</div><div class="mono" style="font-size:20px;font-weight:600">6</div><div class="caption" style="font-size:10.5px;margin-top:2px">Identify to report</div></div>
+              <div style="background:#fff;padding:12px 14px"><div class="mini-h">Risk methods</div><div class="mono" style="font-size:20px;font-weight:600">22</div><div class="caption" style="font-size:10.5px;margin-top:2px">In the demo library</div></div>
             </div>
           </div>
         </div>
 
         <div class="panel">
-          <div class="panel-hd"><h2>Risk management lifecycle</h2>
-            <div class="right"><span class="hint">From periodic assessment to continuous management</span></div></div>
-          <div class="stages">
-            <div class="stage"><div class="n">01</div><div class="nm">Identify</div>
-              <div class="ds">Surface potential risks from structured and unstructured information.</div></div>
-            <div class="stage"><div class="n">02</div><div class="nm">Assess</div>
-              <div class="ds">Analyse likelihood, potential impact and interdependencies.</div></div>
-            <div class="stage"><div class="n">03</div><div class="nm">Prioritize</div>
-              <div class="ds">Focus attention on the risks with the greatest business significance.</div></div>
-            <div class="stage"><div class="n">04</div><div class="nm">Monitor</div>
-              <div class="ds">Track changing risk conditions and emerging patterns.</div></div>
-            <div class="stage"><div class="n">05</div><div class="nm">Report</div>
-              <div class="ds">Turn complex risk information into structured management insight.</div></div>
-            <div class="stage"><div class="n">06</div><div class="nm">Decide</div>
-              <div class="ds">Support faster, better-informed business and risk decisions.</div></div>
+          <div class="panel-hd"><h2>Our technology combines three core capabilities</h2>
+            <div class="right"><span class="hint">Technology alone does not create effective risk management</span></div></div>
+          <div class="three-col" style="padding:0">
+            <div>
+              <div class="nm">Artificial Intelligence</div>
+              <p class="ds">AI can help analyse large volumes of structured and unstructured information, identify
+                relationships and patterns, and support the identification of potential emerging risks.</p>
+            </div>
+            <div>
+              <div class="nm">Data Analytics</div>
+              <p class="ds">Risk information often exists across multiple systems and organizational functions. Our
+                approach focuses on integrating and analysing risk-related data to provide a more comprehensive view
+                of organizational risk exposure.</p>
+            </div>
+            <div>
+              <div class="nm">Risk Management</div>
+              <p class="ds">Our solution incorporates practical enterprise risk management concepts, risk assessment
+                methodologies, risk prioritization, controls, monitoring and decision support.</p>
+            </div>
           </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><h2>A technology-enabled risk management framework</h2>
+            <div class="right"><span class="hint">Five layers, one continuously updated view</span></div></div>
+          <div class="layer-row"><div class="no">01</div><div class="nm">Data layer</div>
+            <div class="ds">Collect and organize relevant information from multiple sources.</div></div>
+          <div class="layer-row"><div class="no">02</div><div class="nm">Intelligence layer</div>
+            <div class="ds">Apply AI, machine learning, analytics and other data technologies to identify patterns and relationships.</div></div>
+          <div class="layer-row"><div class="no">03</div><div class="nm">Risk analysis layer</div>
+            <div class="ds">Translate information into structured risk assessments and potential business impacts.</div></div>
+          <div class="layer-row"><div class="no">04</div><div class="nm">Monitoring layer</div>
+            <div class="ds">Support ongoing monitoring of changing conditions and emerging risks.</div></div>
+          <div class="layer-row last"><div class="no">05</div><div class="nm">Decision support layer</div>
+            <div class="ds">Present risk information in a format that supports management decision-making.</div></div>
         </div>
 
         <div class="cols b" style="margin-top:16px">
           <div class="panel">
-            <div class="panel-hd"><h2>What the platform brings</h2></div>
-            <div class="panel-bd" style="padding-top:6px;padding-bottom:8px">
-              <div class="pillar"><div class="nm">Artificial intelligence</div>
-                <div class="ds">Pattern detection across complex, unstructured risk information.</div></div>
-              <div class="pillar"><div class="nm">Data analytics</div>
-                <div class="ds">Integration and analysis of risk data from multiple sources.</div></div>
-              <div class="pillar"><div class="nm">Risk methodologies</div>
-                <div class="ds">Enterprise risk frameworks backed by practical industry experience.</div></div>
-              <div class="pillar"><div class="nm">Decision support</div>
-                <div class="ds">Structured insight on exposure and potential business impact.</div></div>
+            <div class="panel-hd"><h2>Key capabilities</h2></div>
+            <div class="panel-bd" style="padding-top:4px;padding-bottom:6px">
+              <div class="pillar"><div class="nm">Risk identification</div>
+                <div class="ds">Use AI and data analysis to support the identification of potential risks across multiple business areas.</div></div>
+              <div class="pillar"><div class="nm">Risk assessment</div>
+                <div class="ds">Evaluate risk characteristics, potential impacts and relationships among different risk factors.</div></div>
+              <div class="pillar"><div class="nm">Emerging risk detection</div>
+                <div class="ds">Support the identification of changing conditions and emerging patterns that may require management attention.</div></div>
+              <div class="pillar"><div class="nm">Risk prioritization</div>
+                <div class="ds">Help organizations allocate attention and resources according to the significance of identified risks.</div></div>
+              <div class="pillar"><div class="nm">Risk monitoring</div>
+                <div class="ds">Enable more continuous monitoring instead of relying solely on periodic assessments.</div></div>
+              <div class="pillar" style="border-bottom:0"><div class="nm">Risk reporting</div>
+                <div class="ds">Transform complex risk information into structured insights for management and decision-makers.</div></div>
             </div>
           </div>
           <div class="panel">
-            <div class="panel-hd"><h2>The problem it replaces</h2>
-              <div class="right"><span class="pill warn nodot">Fragmented risk data</span></div></div>
+            <div class="panel-hd"><h2>Our approach</h2>
+              <div class="right"><span class="pill mut nodot">Connecting risk information across the enterprise</span></div></div>
             <div class="panel-bd">
-              <div class="kv" style="grid-template-columns:1fr 1fr;gap:8px 20px">
-                <div class="k" style="color:var(--ink)">Fragmented records</div><div class="k" style="color:var(--ink)">Manual tracking</div>
-                <div class="k" style="color:var(--ink)">Periodic assessment</div><div class="k" style="color:var(--ink)">Data-intensive reporting</div>
-                <div class="k" style="color:var(--ink)">Difficult to scale</div><div class="k" style="color:var(--ink)">Slow response to emerging risk</div>
-              </div>
-              <div class="note" style="margin-top:12px">Risk information spread across spreadsheets, reports, legacy systems and functions
-                makes exposure hard to see until it has already materialised.</div>
+              <p class="caption" style="font-size:12.5px;color:var(--steel);margin:0 0 4px">
+                Instead of examining each risk independently, our approach aims to help organizations understand:
+              </p>
+              <div class="qline first"><div class="q">What is happening?</div><div class="a">What risks are emerging?</div></div>
+              <div class="qline"><div class="q">Why does it matter?</div><div class="a">What could be the potential business impact?</div></div>
+              <div class="qline"><div class="q">How are risks connected?</div><div class="a">How can different risk factors interact?</div></div>
+              <div class="qline"><div class="q">What should management monitor?</div><div class="a">Which risks require continued attention?</div></div>
+              <div class="qline last"><div class="q">Where should resources be focused?</div><div class="a">Which risks may require further analysis or action?</div></div>
             </div>
           </div>
         </div>
 
         <div class="panel">
-          <div class="panel-hd"><h2>Module map</h2>
-            <div class="right"><span class="hint">Which lifecycle stage each module serves</span></div></div>
-          <div class="tbl-wrap">
-            <table class="tbl">
-              <colgroup><col style="width:19%"><col style="width:17%"><col style="width:64%"></colgroup>
-              <thead><tr><th>Module</th><th>Lifecycle stage</th><th>What it does</th></tr></thead>
-              <tbody>
-                <tr><td><b>Risk register</b></td><td class="mono" style="font-size:11px">Assess · Prioritize</td>
-                  <td>5×5 and quantitative scoring, inherent-to-residual roll-up, control credit tracking, board-level export</td></tr>
-                <tr><td><b>Barriers &amp; bow-ties</b></td><td class="mono" style="font-size:11px">Monitor</td>
-                  <td>Safety-critical element register, barrier health from tests and faults, impairment escalation to the register</td></tr>
-                <tr><td><b>Permit to work</b></td><td class="mono" style="font-size:11px">Monitor</td>
-                  <td>Permit types, isolation binding, simultaneous-operations and conflict checks</td></tr>
-                <tr><td><b>Asset integrity</b></td><td class="mono" style="font-size:11px">Identify · Monitor</td>
-                  <td>Thickness surveys, corrosion rates, remaining life, risk-based inspection intervals</td></tr>
-                <tr><td><b>Incidents</b></td><td class="mono" style="font-size:11px">Identify · Report</td>
-                  <td>Intake, classification, investigation workflow, repeat-cause detection</td></tr>
-                <tr><td><b>Compliance &amp; audit</b></td><td class="mono" style="font-size:11px">Report · Decide</td>
-                  <td>Obligation register, evidence coverage, audit findings and due dates</td></tr>
-                <tr><td><b>AI risk copilot</b></td><td class="mono" style="font-size:11px">Decide</td>
-                  <td>Register-grounded answers, barrier gap detection, draft notifications with citations</td></tr>
-              </tbody>
-            </table>
+          <div class="panel-hd"><h2>Risk methods library</h2>
+            <div class="right"><span class="hint">Assessment methods available as study workspaces</span></div></div>
+          <div class="methods-grid">
+            <div class="mgroup"><div class="t">Process risk &amp; functional safety</div>
+              <div class="l">HAZOP · LOPA (SIL determination) · Safety requirement specification · SIL calculation ·
+                SIS lifecycle management · Closed-loop recommendation tracking</div></div>
+            <div class="mgroup"><div class="t">Graphical risk assessment</div>
+              <div class="l">BowTie · Fault tree analysis (FTA) · Event tree analysis (ETA)</div></div>
+            <div class="mgroup"><div class="t">Other risk assessments</div>
+              <div class="l">HAZID · RCA · What-If · HACCP · CyberRisk</div></div>
+            <div class="mgroup"><div class="t">Equipment safety &amp; quality</div>
+              <div class="l">PFMEA · DFMEA · Quality management system (QMS) · APQP</div></div>
+            <div class="mgroup"><div class="t">Operational assessment</div>
+              <div class="l">JHA · Safety check list (SCL) · Double-check system implementation</div></div>
+            <div class="mgroup"><div class="t">Quantitative risk assessment</div>
+              <div class="l">QRA — regional, individual and societal risk · Accident risk (pool fire, vapour cloud
+                explosion, toxic release) · Dow Fire &amp; Explosion Index · ICI Mond index</div></div>
           </div>
         </div>
 
         <div class="cols b" style="margin-top:16px">
+          <div class="panel">
+            <div class="panel-hd"><h2>Managing risk in a complex energy environment</h2>
+              <div class="right"><span class="hint">Interconnected exposure</span></div></div>
+            <div class="panel-bd">
+              <div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px">
+                <div class="k" style="color:var(--ink)">Physical</div>
+                <div class="k" style="color:var(--ink)">Financial</div>
+                <div class="k" style="color:var(--ink)">Regulatory</div>
+                <div class="k" style="color:var(--ink)">Environmental</div>
+                <div class="k" style="color:var(--ink)">Technological</div>
+                <div class="k" style="color:var(--ink)">Geopolitical</div>
+              </div>
+              <div class="note" style="margin-top:12px">
+                Interconnected risks involving operations, market conditions, commodity prices and financial
+                performance rarely stay inside a single register. The platform connects them so that exposure can be
+                seen before it materialises.
+              </div>
+            </div>
+          </div>
           <div class="panel">
             <div class="panel-hd"><h2>Where it is applied</h2>
               <div class="right"><span class="hint">Energy industry focus</span></div></div>
@@ -1212,23 +1324,54 @@ body.authed #login{display:none}
               </div>
             </div>
           </div>
-          <div class="panel">
-            <div class="panel-hd"><h2>Contact &amp; assurance</h2></div>
-            <div class="panel-bd">
-              <div class="kv" style="grid-template-columns:112px minmax(0,1fr)">
-                <div class="k">Company</div><div>Hua Lu Risk Management &amp; Technology Consulting Co.</div>
-                <div class="k">Email</div><div class="mono" style="font-size:11.5px">hualuriskmanagementtech@gmail.com</div>
-                <div class="k">Phone</div><div class="mono" style="font-size:11.5px">+1 825-734-4168</div>
-                <div class="k">Location</div><div>Calgary, Alberta, Canada</div>
-                <div class="k">Deployment</div><div>Customer-hosted or private cloud; data residency by region</div>
-                <div class="k">Access control</div><div>Role-based, per asset and per register; full audit trail</div>
-              </div>
-              <div class="note" style="margin-top:12px">This build is a demonstration: synthetic data, browser-only session,
-                no live connectors and no customer records.</div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><h2>Module map</h2>
+            <div class="right"><span class="hint">Which lifecycle stage each module serves</span></div></div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <colgroup><col style="width:19%"><col style="width:17%"><col style="width:64%"></colgroup>
+              <thead><tr><th>Module</th><th>Lifecycle stage</th><th>What it does</th></tr></thead>
+              <tbody>
+                <tr><td><b>Risk studies</b></td><td class="mono" style="font-size:11px">Identify · Assess</td>
+                  <td>Study workspaces for HAZOP, LOPA, SIL, BowTie, FTA, QRA, FMEA and QMS gap analysis, with closed-loop recommendation tracking</td></tr>
+                <tr><td><b>Risk register</b></td><td class="mono" style="font-size:11px">Assess · Prioritize</td>
+                  <td>5×5 and quantitative scoring, inherent-to-residual roll-up, control credit tracking, board-level export</td></tr>
+                <tr><td><b>Barriers &amp; bow-ties</b></td><td class="mono" style="font-size:11px">Monitor</td>
+                  <td>Safety-critical element register, barrier health from tests and faults, impairment escalation to the register</td></tr>
+                <tr><td><b>Permit to work</b></td><td class="mono" style="font-size:11px">Monitor</td>
+                  <td>Permit types, isolation binding, simultaneous-operations and conflict checks</td></tr>
+                <tr><td><b>Asset integrity</b></td><td class="mono" style="font-size:11px">Identify · Monitor</td>
+                  <td>Thickness surveys, corrosion rates, remaining life, risk-based inspection intervals</td></tr>
+                <tr><td><b>Incidents</b></td><td class="mono" style="font-size:11px">Identify · Report</td>
+                  <td>Intake, classification, investigation workflow, repeat-cause detection</td></tr>
+                <tr><td><b>Compliance &amp; audit</b></td><td class="mono" style="font-size:11px">Report · Decide</td>
+                  <td>Obligation register, evidence coverage, audit findings and due dates</td></tr>
+                <tr><td><b>AI risk copilot</b></td><td class="mono" style="font-size:11px">Decide</td>
+                  <td>Register-grounded answers, barrier gap detection, draft notifications with citations</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-hd"><h2>Contact &amp; assurance</h2></div>
+          <div class="panel-bd">
+            <div class="kv" style="grid-template-columns:112px minmax(0,1fr)">
+              <div class="k">Company</div><div>Hua Lu Risk Management &amp; Technology Consulting Co.</div>
+              <div class="k">Email</div><div class="mono" style="font-size:11.5px">hualuriskmanagementtech@gmail.com</div>
+              <div class="k">Phone</div><div class="mono" style="font-size:11.5px">+1 825-734-4168</div>
+              <div class="k">Location</div><div>Calgary, Alberta, Canada</div>
+              <div class="k">Deployment</div><div>Customer-hosted or private cloud; data residency by region</div>
+              <div class="k">Access control</div><div>Role-based, per asset and per register; full audit trail</div>
             </div>
+            <div class="note" style="margin-top:12px">This build is a demonstration: synthetic data, browser-only session,
+              no live connectors and no customer records.</div>
           </div>
         </div>
       </section>
+
       </div>
     </div>
   </div>
@@ -1339,7 +1482,7 @@ const cellBg = s => s >= 15 ? "#EFD6CF" : s >= 10 ? "#F6E2D0" : s >= 5 ? "#F3ECD
 const cellInk = s => s >= 15 ? "#8E2019" : s >= 10 ? "#B9551E" : s >= 5 ? "#8C6A10" : "#2F6E52";
 const fmtDate = d => new Date(d + "T12:00:00").toLocaleDateString("en-CA", {year:"numeric", month:"short", day:"2-digit"});
 
-const state = {view:"overview", cat:"All", q:"", cell:null};
+const state = {view:"overview", cat:"All", q:"", cell:null, sfam:"All"};
 
 /* ============================================================
    Overview
@@ -1920,7 +2063,7 @@ function openRisk(id){
   };
 }
 function closeDrawer(){
-  $("#drawer").classList.remove("on");
+  $("#drawer").classList.remove("on", "wide");
   $("#drawer").setAttribute("aria-hidden", "true");
   $("#scrim").classList.remove("on");
 }
@@ -2191,8 +2334,163 @@ $("#signout").addEventListener("click", () => {
 });
 
 /* ============================================================
+   Risk studies — method workspaces
+   ============================================================ */
+const STUDY_FAMS = ["Process & functional safety","Graphical","Other assessments","Equipment & quality","Operational","Quantitative"];
+const STUDIES = [
+  {id:"HAZOP-2026-041", m:"HAZOP", fam:"Process & functional safety", scope:"Node 3 · feed lines to stripper, high flow", asset:"CPF · Inlet separation", lead:"J. Whitmore", status:"Open actions", recs:4, date:"2026-10-28"},
+  {id:"LOPA-2026-018", m:"LOPA", fam:"Process & functional safety", scope:"Inlet separator overpressure — SIL determination", asset:"CPF · Pressure protection", lead:"A. Nakamura", status:"Issued", recs:2, date:"2026-09-14"},
+  {id:"SIL-2026-006", m:"SIL verification", fam:"Process & functional safety", scope:"SIF-12 high pressure trip · PFDavg calculation", asset:"CPF · Control", lead:"D. Okonkwo", status:"Issued", recs:1, date:"2026-08-22"},
+  {id:"SRS-2026-003", m:"Safety requirement specification", fam:"Process & functional safety", scope:"SIF-12 to SIF-15 · functional requirements", asset:"Engineering", lead:"S. Bergeron", status:"In progress", recs:0, date:"2026-11-04"},
+  {id:"SIS-2026-009", m:"SIS lifecycle review", fam:"Process & functional safety", scope:"Proof-test intervals and bypass register", asset:"CPF · SIS", lead:"L. Chen", status:"Open actions", recs:3, date:"2026-07-30"},
+  {id:"BT-2026-011", m:"BowTie", fam:"Graphical", scope:"Loss of well control · workover on pad 12", asset:"Well Pad 12", lead:"S. Bergeron", status:"Open actions", recs:2, date:"2026-10-12"},
+  {id:"FTA-2026-014", m:"Fault tree analysis", fam:"Graphical", scope:"Firewater pump unavailability · top event", asset:"Fire protection · P-101", lead:"R. Desjardins", status:"Issued", recs:1, date:"2026-09-02"},
+  {id:"ETA-2026-021", m:"Event tree analysis", fam:"Graphical", scope:"H2S release at inlet · ignition outcomes", asset:"CPF · Inlet separation", lead:"J. Whitmore", status:"Issued", recs:0, date:"2026-06-19"},
+  {id:"HAZID-2026-031", m:"HAZID", fam:"Other assessments", scope:"Turnaround scope · unit 21 hot work", asset:"Turnaround", lead:"M. Haddad", status:"Open actions", recs:3, date:"2026-10-05"},
+  {id:"RCA-2026-027", m:"Root cause analysis", fam:"Other assessments", scope:"GD-12 gas detector fault · cause map", asset:"Detection · CPF", lead:"A. Nakamura", status:"In progress", recs:2, date:"2026-11-09"},
+  {id:"WI-2026-033", m:"What-If", fam:"Other assessments", scope:"Tank farm T-104 venting and overfill", asset:"Tank Farm · T-104", lead:"D. Okonkwo", status:"Issued", recs:1, date:"2026-05-28"},
+  {id:"HACCP-2026-004", m:"HACCP", fam:"Other assessments", scope:"Sales gas quality · critical control points", asset:"Gas processing · E-201", lead:"L. Chen", status:"Issued", recs:0, date:"2026-04-16"},
+  {id:"CR-2026-022", m:"CyberRisk", fam:"Other assessments", scope:"Industrial control network segmentation", asset:"OT / SCADA", lead:"R. Desjardins", status:"Open actions", recs:5, date:"2026-11-02"},
+  {id:"QRA-2026-012", m:"QRA", fam:"Quantitative", scope:"Pool fire, vapour cloud explosion, toxic release", asset:"CPF · whole site", lead:"S. Bergeron", status:"Issued", recs:2, date:"2026-08-08"},
+  {id:"DFEI-2026-016", m:"Dow Fire & Explosion Index", fam:"Quantitative", scope:"Process unit fire and explosion index", asset:"CPF · process units", lead:"M. Haddad", status:"Issued", recs:0, date:"2026-07-11"},
+  {id:"ICM-2026-019", m:"ICI Mond index", fam:"Quantitative", scope:"Fire, explosion and toxicity index", asset:"Tank Farm", lead:"A. Nakamura", status:"In progress", recs:1, date:"2026-09-25"},
+  {id:"PFMEA-2026-008", m:"PFMEA", fam:"Equipment & quality", scope:"Glycol regeneration package failure modes", asset:"Gas processing · E-201", lead:"L. Chen", status:"Open actions", recs:2, date:"2026-10-20"},
+  {id:"DFMEA-2026-013", m:"DFMEA", fam:"Equipment & quality", scope:"New inlet separator design review", asset:"Engineering", lead:"D. Okonkwo", status:"Issued", recs:1, date:"2026-06-30"},
+  {id:"QMS-2026-002", m:"QMS gap analysis", fam:"Equipment & quality", scope:"ISO 9001:2015 clause gap analysis", asset:"Corporate QMS", lead:"R. Desjardins", status:"Open actions", recs:6, date:"2026-10-01"},
+  {id:"APQP-2026-005", m:"APQP", fam:"Equipment & quality", scope:"Product quality planning · exchanger retrofit", asset:"Procurement", lead:"M. Haddad", status:"In progress", recs:2, date:"2026-09-08"},
+  {id:"JHA-2026-039", m:"JHA", fam:"Operational", scope:"Hot work adjacent to live hydrocarbon line", asset:"Turnaround · Unit 21", lead:"M. Haddad", status:"Open actions", recs:3, date:"2026-11-12"},
+  {id:"SCL-2026-036", m:"Safety check list", fam:"Operational", scope:"Commissioning checklist · compressor K-201", asset:"Compression", lead:"S. Bergeron", status:"Closed", recs:0, date:"2026-03-21"}
+];
+const HAZOP_ROWS = [
+  {c:"Bypass around control valve FV-101 opened", q:"Excess flow to column: off-spec products", l:1, s:3, sg:"Operating procedures for routing flows", r:"Add high flow alarm to FT-101, independent of FRC-101"},
+  {c:"Control valve FV-101 or controller fails CV open", q:"Excess flow to column: off-spec products", l:3, s:3, sg:"Flow indication through FRC-101, not independent", r:"Add high flow alarm to FT-101, independent of FRC-101"},
+  {c:"FT-101 reading falsely low", q:"Excess flow to column: off-spec products", l:3, s:3, sg:"Instrument in proven use for this application", r:"No action required — safeguards are adequate"},
+  {c:"Line rupture", q:"Flammable release with back-flow from stripper", l:2, s:3, sg:"Isolation valve at battery limits and column; area fire detection", r:"Add check valve to 3in-P-102, close to stripper inlet"},
+  {c:"Loss of level in upstream vessel V-101 causing gas breakthrough", q:"Heavy vapour traffic; column flooding and off-spec product", l:3, s:4, sg:"Low-low level alarm in V-101", r:"Low-low level switch on V-101 to trip FV-101 closed (solenoid)"}
+];
+const STUDY_NOTES = {
+  "Process & functional safety":["Confirm safeguard independence in the LOPA worksheet","Update SRS and re-verify the SIL target","Re-test the final element at the next proof-test interval"],
+  "Graphical":["Add the missing barrier to the bow-tie","Review mitigation for the highest-frequency branch","Schedule barrier test and record evidence"],
+  "Other assessments":["Update the action register from the workshop","Confirm control effectiveness with field verification","Link the finding to the risk register"],
+  "Equipment & quality":["Revise severity ranking with maintenance data","Update control plan and inspection interval","Close the gap with a documented procedure"],
+  "Operational":["Re-brief the crew on the revised JHA","Add the double-check step to the permit","Confirm checklist completeness before start-up"],
+  "Quantitative":["Refresh ignition and hole-size assumptions","Update individual and societal risk contours","Re-run the dispersion model with current inventory"]
+};
+function stCls(st){
+  return st === "Issued" ? "ok" : st === "Open actions" ? "warn" : st === "In progress" ? "info" : "mut";
+}
+function studyRecs(s){
+  const base = STUDY_NOTES[s.fam] || ["Close out the recommendation and attach evidence"];
+  return base.slice(0, Math.max(1, Math.min(base.length, s.recs || 1)));
+}
+function renderStudies(){
+  const fams = ["All"].concat(STUDY_FAMS);
+  $("#study-chips").innerHTML = fams.map(f =>
+    `<button class="chip ${state.sfam === f ? "on" : ""}" data-fam="${esc(f)}">${esc(f)}<span style="color:var(--steel2);margin-left:5px">${f === "All" ? STUDIES.length : STUDIES.filter(s => s.fam === f).length}</span></button>`).join("");
+  $$("#study-chips .chip").forEach(b => b.addEventListener("click", () => { state.sfam = b.dataset.fam; renderStudies(); }));
+  const list = STUDIES.filter(s => state.sfam === "All" || s.fam === state.sfam);
+  $("#study-rows").innerHTML = list.map(s => `
+    <tr data-study="${s.id}" style="cursor:pointer">
+      <td class="mono" style="font-size:11px">${esc(s.id)}</td>
+      <td><b>${esc(s.m)}</b></td>
+      <td>${esc(s.scope)}</td>
+      <td>${esc(s.asset)}</td>
+      <td>${esc(s.lead)}</td>
+      <td class="mono" style="font-size:11.5px">${s.recs}</td>
+      <td><span class="pill ${stCls(s.status)}">${esc(s.status)}</span>
+        <div class="mono" style="font-size:10px;color:var(--steel2);margin-top:3px">${fmtDate(s.date)}</div></td>
+    </tr>`).join("");
+  $$("#study-rows tr").forEach(tr => tr.addEventListener("click", () => openStudy(tr.dataset.study)));
+  const total = STUDIES.length;
+  const recs = STUDIES.reduce((a, s) => a + s.recs, 0);
+  const today = new Date("2026-11-16");
+  const over = STUDIES.filter(s => s.recs > 0 && (today - new Date(s.date)) / 86400000 > 30).length;
+  const sil = 4;
+  $("#st-total").textContent = total;
+  $("#st-recs").textContent = recs;
+  $("#st-sil").innerHTML = sil + "<i>/6</i>";
+  $("#st-over").textContent = over;
+  $("#st-recs-bar").style.width = Math.min(100, recs) + "%";
+  $("#st-sil-bar").style.width = Math.round(sil / 6 * 100) + "%";
+  $("#st-over-bar").style.width = Math.min(100, over / total * 100 * 4) + "%";
+}
+function openStudy(id){
+  const s = STUDIES.find(x => x.id === id);
+  if (!s) return;
+  const isHazop = s.m === "HAZOP";
+  const body = isHazop ? `
+      <div class="block-h">Worksheet · deviations, causes and safeguards</div>
+      <div class="tbl-wrap" style="border:1px solid var(--line2)">
+        <table class="tbl" style="font-size:11px">
+          <colgroup><col style="width:22%"><col style="width:22%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:17%"><col style="width:18%"></colgroup>
+          <thead><tr><th>Cause</th><th>Consequence</th><th>L</th><th>S</th><th>RR</th><th>Safeguard</th><th>Recommendation</th></tr></thead>
+          <tbody>${HAZOP_ROWS.map(r => {
+            const rr = r.l * r.s;
+            const bg = rr >= 10 ? "#8E2019" : rr >= 5 ? "#8C6A10" : "#2F6E52";
+            return `<tr>
+              <td>${esc(r.c)}</td><td>${esc(r.q)}</td>
+              <td class="mono">${r.l}</td><td class="mono">${r.s}</td>
+              <td class="mono" style="color:#fff;background:${bg};text-align:center;font-weight:600">${rr}</td>
+              <td>${esc(r.sg)}</td><td>${esc(r.r)}</td>
+            </tr>`;
+          }).join("")}</tbody>
+        </table>
+      </div>
+      <div class="note" style="margin-top:10px">Node 3 · feed lines 2in-P-101 and 102 to stripper. Deviations: high pressure,
+        high temperature, high flow. L = likelihood, S = severity, RR = risk ranking (L × S).</div>`
+    : `
+      <div class="block-h">Study conclusions</div>
+      <p class="caption" style="margin:0 0 10px">
+        The ${esc(s.m)} study covered ${esc(s.scope).toLowerCase()}. Safeguards were reviewed against the defined
+        acceptance criteria; ${s.recs ? s.recs + " recommendation" + (s.recs > 1 ? "s were" : " was") + " raised" :
+        "no open recommendations remain"}.
+      </p>
+      <div class="block-h">Recommendations</div>
+      ${studyRecs(s).map((t, i) => `<div class="note" style="margin-bottom:8px">
+        <b class="mono" style="font-size:11px">${s.id}-R${String(i + 1).padStart(2, "0")}</b> — ${esc(t)}
+        <span style="color:var(--steel2)">· owner ${esc(s.lead)}</span></div>`).join("")}`;
+
+  $("#drawer").innerHTML = `
+    <div class="drawer-hd" style="position:relative">
+      <div class="id"><span>${esc(s.id)}</span><span style="color:var(--line)">|</span>
+        <span class="pill mut" style="font-size:10.5px">${esc(s.fam)}</span></div>
+      <h3>${esc(s.m)} · ${esc(s.scope)}</h3>
+      <button class="icon-btn x" id="drawer-x" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="drawer-bd">
+      <div class="block-h" style="margin-top:0">Study record</div>
+      <div class="kv">
+        <div class="k">Method</div><div>${esc(s.m)}</div>
+        <div class="k">Area</div><div>${esc(s.asset)}</div>
+        <div class="k">Lead</div><div>${esc(s.lead)}</div>
+        <div class="k">Status</div><div><span class="pill ${stCls(s.status)}">${esc(s.status)}</span></div>
+        <div class="k">Issued</div><div class="mono">${fmtDate(s.date)}</div>
+        <div class="k">Open actions</div><div class="mono">${s.recs}</div>
+      </div>
+      ${body}
+      <div class="note" style="margin-top:12px">Synthetic demonstration record. No customer study data is held in this build.</div>
+    </div>
+    <div class="drawer-ft">
+      <button class="btn" id="drawer-close">Close</button>
+      <button class="btn primary" data-link-register="${s.id}">Link to risk register</button>
+    </div>`;
+  $("#drawer").classList.add("on","wide");
+  $("#drawer").setAttribute("aria-hidden", "false");
+  $("#scrim").classList.add("on");
+  $("#drawer-x").onclick = closeDrawer;
+  $("#drawer-close").onclick = closeDrawer;
+  $("[data-link-register]").onclick = () => {
+    toast(`${s.id} linked — recommendations tracked to closure in the register`);
+    closeDrawer();
+  };
+}
+
+/* ============================================================
    Boot
    ============================================================ */
+renderStudies();
 renderKpis();
 renderTopExposures();
 renderMatrix();
